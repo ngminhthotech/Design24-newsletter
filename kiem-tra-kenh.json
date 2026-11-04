@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-11-04",
+  "buffer_channels": {
+    "ok": true,
+    "channels": [
+      {
+        "id": "6aeabb07e29c69a17156ff09",
+        "name": "design24_hocthietke",
+        "service": "tiktok",
+        "organization": "My organization"
+      },
+      {
+        "id": "6ae9ad13e29c69a1714823c8",
+        "name": "Học Viện Design24",
+        "service": "facebook",
+        "organization": "My organization"
+      },
+      {
+        "id": "6ad9b681778b240e2f88a642",
+        "name": "Học Viện Design24",
+        "service": "youtube",
+        "organization": "My organization"
+      }
+    ]
+  },
+  "vbee_http_code": "401"
+}
