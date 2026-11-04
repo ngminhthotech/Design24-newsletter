@@ -1,0 +1,86 @@
+{
+  "series": "Mẹo thiết kế",
+  "topic": "Quy tắc 60-30-10",
+  "date": "04/11/2026",
+  "sources": ["Interaction Design Foundation (Color Theory)", "Canva Design School"],
+  "scenes": [
+    {
+      "type": "hook",
+      "kicker": "MẸO PHỐI MÀU",
+      "title": "Quy tắc\n60-30-10",
+      "sub": "Phối màu sao cho sang mà không rối mắt?",
+      "say": "Vì sao có thiết kế nhìn rất sang, còn có thiết kế lại rối mắt? Bí quyết nằm ở quy tắc phối màu 60, 30, 10."
+    },
+    {
+      "type": "ratio",
+      "title": "Chia màu theo tỉ lệ",
+      "parts": [
+        {"pct": 60, "label": "Màu chủ đạo", "color": "#F4F1EA"},
+        {"pct": 30, "label": "Màu phụ", "color": "#0A2A8C"},
+        {"pct": 10, "label": "Màu nhấn", "color": "#FF7F14"}
+      ],
+      "say": "Quy tắc này chia màu theo tỉ lệ. 60 phần trăm cho màu chủ đạo, 30 phần trăm cho màu phụ, và 10 phần trăm cho màu nhấn."
+    },
+    {
+      "type": "point",
+      "num": "60%",
+      "icon": "layers",
+      "color": "#F4F1EA",
+      "title": "Màu chủ đạo làm nền",
+      "body": "Chọn màu trung tính hoặc nhạt, phủ phần lớn bố cục để mắt người xem được nghỉ.",
+      "examples": ["Nền trang", "Khoảng trắng", "Mảng lớn"],
+      "say": "Màu chủ đạo nên là màu trung tính hoặc nhạt, như trắng, xám hay be. Nó làm nền, để mắt người xem được nghỉ."
+    },
+    {
+      "type": "point",
+      "num": "30%",
+      "icon": "grid",
+      "color": "#0A2A8C",
+      "title": "Màu phụ tạo chiều sâu",
+      "body": "Dùng cho các khối lớn thứ hai. Hợp với màu chủ đạo, không tranh sáng với màu nhấn.",
+      "examples": ["Thanh menu", "Thẻ nội dung", "Chữ tiêu đề"],
+      "say": "Màu phụ dùng cho thanh menu, thẻ nội dung hay chữ tiêu đề. Nó tạo chiều sâu, nhưng không tranh sáng."
+    },
+    {
+      "type": "point",
+      "num": "10%",
+      "icon": "click",
+      "color": "#FF7F14",
+      "title": "Màu nhấn dẫn mắt",
+      "body": "Màu mạnh nhất, dùng thật ít, đặt đúng chỗ bạn muốn người xem nhìn vào hoặc bấm vào.",
+      "examples": ["Nút bấm", "Biểu tượng", "Điểm nhấn"],
+      "say": "Màu nhấn là màu mạnh nhất. Dùng thật ít, cho nút bấm hay điểm quan trọng, mắt người xem sẽ tự tìm đến."
+    },
+    {
+      "type": "compare",
+      "title": "Thử so sánh",
+      "bad": {
+        "label": "Màu ngang nhau",
+        "palette": {"bg": "#FFE14D", "panel": "#E53935", "text": "#1E88E5", "button": "#8E24AA", "extra": ["#43A047", "#00ACC1", "#F06292", "#43A047"]}
+      },
+      "good": {
+        "label": "Theo 60-30-10",
+        "palette": {"bg": "#F4F1EA", "panel": "#0A2A8C", "text": "#0A2A8C", "button": "#FF7F14"}
+      },
+      "say": "Bên trái, các màu dùng ngang nhau, mắt không biết nhìn vào đâu. Bên phải, đúng tỉ lệ, nút đăng ký nổi bật ngay."
+    },
+    {
+      "type": "list",
+      "kicker": "GHI NHỚ",
+      "icon": "bookmark",
+      "title": "3 điều cần nhớ",
+      "items": [
+        "Màu nhạt làm nền, chiếm phần lớn",
+        "Màu phụ cho khối lớn, không tranh sáng",
+        "Màu nhấn dùng ít, đặt đúng điểm cần bấm"
+      ],
+      "say": "Tỉ lệ chỉ là điểm khởi đầu, không phải luật cứng. Hãy thử áp dụng cho thiết kế tiếp theo của bạn."
+    },
+    {
+      "type": "outro",
+      "cta": "Theo dõi Design24",
+      "sub": "Mỗi ngày một mẹo thiết kế",
+      "say": "Theo dõi Design24, để học thêm một mẹo thiết kế mỗi ngày nhé!"
+    }
+  ]
+}
