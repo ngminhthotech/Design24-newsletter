@@ -1,6 +1,6 @@
 {
-  "_ghi_chu": "Mã kênh Buffer của Design24 (tài khoản hocviendesign24.vn). Chạy python3 -m autopost.buffer channels để lấy id. Chỉ đặt confirmed=true sau khi người dùng xác nhận đúng 3 kênh.",
-  "confirmed": false,
+  "_ghi_chu": "Mã kênh Buffer của Design24 (tài khoản hocviendesign24.vn). Người dùng xác nhận đăng vào 3 kênh này ngày 04/11/2026.",
+  "confirmed": true,
   "facebook": {
     "id": "6ae9ad13e29c69a1714823c8",
     "name": "Học Viện Design24"
