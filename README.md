@@ -18,7 +18,7 @@ Code dùng lại từ luồng Tìm Việc Số (`ngminhthotech/auto-post`): đă
 | `autopost/run.py` | Chạy trọn luồng một bài: giọng Vbee, dựng, nén, tải lên nhánh `media`, hẹn giờ Buffer 3 kênh (`--dry-run`, `--draft`, `--at`) |
 | `assets/chu-de.md` | Danh sách chủ đề cho 2 khung giờ 9:00 và 19:00 |
 | `examples/artboard-khoang-trang.json` | Kịch bản mẫu dùng cảnh chung: `fix`, `versus`, `dodont`, `point`, `list` |
-| `render/tracks.py` | 4 bản nhạc nền tự tạo (lofi, chill, house, tech), xoay vòng giữa các video |
+| `render/tracks.py` | 8 bản nhạc nền tự tạo (lofi, chill, house, tech, acoustic, marimba, synthwave, piano), xoay vòng giữa các video |
 | `render/video.sh` | Dựng video MP4 từ JSON (thêm `--voice` để có giọng đọc) |
 | `render/voice.py` | Giọng đọc Vbee cho từng cảnh; cách đọc từ chuyên ngành trong `assets/phat-am.json` |
 | `render/music.py` | Nhạc nền và âm chuyển cảnh tự tổng hợp (không dính bản quyền) |

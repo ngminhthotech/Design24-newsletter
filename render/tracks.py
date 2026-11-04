@@ -251,7 +251,145 @@ def tech():
     return tr.mix({"drums": 0.75, "bass": 0.9, "keys": 1.0, "lead": 0.9}, duck=0.4, hi=9000)
 
 
-STYLES = {"lofi": lofi, "chill": chill, "house": house, "tech": tech}
+def acoustic():
+    """Acoustic 92 BPM: guitar gảy (Karplus-Strong), shaker, bass mộc, ấm áp."""
+    tr = Track(92, 5)
+
+    def guitar(f, dur=1.6):
+        n = int(dur * SR)
+        p = max(2, int(SR / f))
+        buf = tr.rng.uniform(-1, 1, p)
+        out = np.empty(n)
+        for i in range(n):
+            out[i] = buf[i % p]
+            buf[i % p] = 0.996 * 0.5 * (buf[i % p] + buf[(i + 1) % p])
+        return out
+
+    ch = [["G2", "B2", "D3", "G3", "B3"], ["D3", "F#3", "A3", "D4"], ["E2", "B2", "E3", "G3", "B3"], ["C3", "E3", "G3", "C4", "E4"]]
+    roots = ["G1", "D2", "E1", "C2"]
+    cache = {}
+    b = tr.beat
+    nbar = int(SECONDS / (4 * b)) + 1
+    for i in range(nbar):
+        t0 = i * 4 * b
+        c = ch[i % 4]
+        for pos, down in ((0, 1), (1, 1), (1.5, 0), (2.5, 0), (3, 1), (3.5, 0)):
+            notes = c if down else c[::-1]
+            for j, nn in enumerate(notes):
+                if nn not in cache:
+                    cache[nn] = guitar(hz(nn))
+                tr.add("keys", cache[nn] * (0.09 if down else 0.06), t0 + pos * b + j * 0.012)
+        tr.add("bass", tr.sub(hz(roots[i % 4]), 1.8 * b) * 0.45, t0)
+        tr.add("bass", tr.sub(hz(roots[i % 4]), 1.6 * b) * 0.35, t0 + 2 * b)
+        if i < 2:
+            continue
+        for k in (0, 2):
+            tr.add("drums", tr.kick(0.6), t0 + k * b)
+            tr.kicks.append(t0 + k * b)
+        for s in (1, 3):
+            tr.add("drums", tr.snare(200) * 0.35, t0 + s * b)
+        for e in range(16):
+            tr.add("drums", tr.hat() * (0.35 if e % 2 else 0.2), t0 + e * b / 4)
+    return tr.mix({"drums": 0.7, "bass": 0.8, "keys": 1.0}, duck=0.25, hi=7000)
+
+
+def marimba():
+    """Marimba vui tươi 112 BPM: giai điệu nảy, vỗ tay, hợp âm sáng."""
+    tr = Track(112, 6)
+
+    def mar(f, dur=0.45):
+        t = tr.t(dur)
+        s = np.sin(2 * np.pi * f * t) + 0.25 * np.sin(2 * np.pi * 4 * f * t) * np.exp(-t * 40)
+        return s * np.exp(-t * 9) * np.minimum(1, t / 0.002)
+
+    ch = [["C4", "E4", "G4"], ["A3", "C4", "E4"], ["F3", "A3", "C4"], ["G3", "B3", "D4"]]
+    roots = ["C2", "A1", "F1", "G1"]
+    mel = [["E5", "G5", "C6", "G5"], ["E5", "C5", "A4", "C5"], ["F5", "A5", "C6", "A5"], ["G5", "D5", "B4", "D5"]]
+    b = tr.beat
+    nbar = int(SECONDS / (4 * b)) + 1
+    for i in range(nbar):
+        t0 = i * 4 * b
+        c, m = ch[i % 4], mel[i % 4]
+        for e in range(8):
+            tr.add("keys", mar(hz(c[[0, 1, 2, 1][e % 4]])) * 0.16, t0 + e * b / 2)
+        if i >= 1:
+            for j, pos in enumerate((0, 0.75, 1.5, 2.5)):
+                tr.add("lead", mar(hz(m[j]), 0.5) * 0.2, t0 + pos * b)
+        for beat in (0, 2):
+            tr.add("bass", tr.pluck(hz(roots[i % 4]), 0.6) * 0.5, t0 + beat * b)
+        if i < 2:
+            continue
+        for beat in range(4):
+            tr.add("drums", tr.kick(0.7), t0 + beat * b)
+            tr.kicks.append(t0 + beat * b)
+            if beat in (1, 3):
+                for d in (0, 0.012, 0.024):
+                    tr.add("drums", tr.snare(1200) * 0.25, t0 + beat * b + d)
+            tr.add("drums", tr.hat() * 0.3, t0 + (beat + 0.5) * b)
+    return tr.mix({"drums": 0.7, "bass": 0.8, "keys": 1.0, "lead": 0.9}, duck=0.3, hi=11000)
+
+
+def synthwave():
+    """Synthwave 108 BPM: bass răng cưa chạy móc kép, pad thập niên 80, trống vang."""
+    tr = Track(108, 7)
+
+    def saw(f, dur):
+        t = tr.t(dur)
+        s = sum(np.sin(2 * np.pi * f * k * t) / k for k in range(1, 12))
+        return filt(s, hi=900) * np.minimum(1, t / 0.005) * np.exp(-t * 4)
+
+    ch = [["A3", "C4", "E4"], ["F3", "A3", "C4"], ["C4", "E4", "G4"], ["G3", "B3", "D4"]]
+    roots = ["A1", "F1", "C2", "G1"]
+    chords_loop(tr, ch, 8, tr.pad, "keys", 0.17)
+    b = tr.beat
+    nbar = int(SECONDS / (4 * b)) + 1
+    for i in range(nbar):
+        t0 = i * 4 * b
+        r = hz(roots[(i // 2) % 4])
+        for e in range(8):
+            tr.add("bass", saw(r * (2 if e % 2 else 1), b / 2 * 0.9) * 0.3, t0 + e * b / 2)
+        if i % 2 == 1:
+            for j, nn in enumerate(["E5", "D5", "C5", "A4"]):
+                tr.add("lead", tr.bell(hz(nn), 0.9) * 0.08, t0 + j * b)
+        if i < 2:
+            continue
+        for beat in range(4):
+            tr.add("drums", tr.kick(0.9), t0 + beat * b)
+            tr.kicks.append(t0 + beat * b)
+            if beat in (1, 3):
+                tr.add("drums", tr.snare(180) * 0.7, t0 + beat * b)
+            for h in (0, 0.5):
+                tr.add("drums", tr.hat() * 0.3, t0 + (beat + h) * b)
+    return tr.mix({"drums": 0.75, "bass": 0.85, "keys": 1.0, "lead": 0.9}, duck=0.5, hi=9000)
+
+
+def piano():
+    """Piano truyền cảm hứng 76 BPM: rải hợp âm, giai điệu đơn giản, dây nền, trống rất nhẹ."""
+    tr = Track(76, 8)
+    ch = [["C3", "G3", "C4", "E4"], ["A2", "E3", "A3", "C4"], ["F2", "C3", "F3", "A3"], ["G2", "D3", "G3", "B3"]]
+    mel = ["E5", "C5", "A4", "B4"]
+    chords_loop(tr, [[n for n in c[1:]] for c in ch], 4, tr.pad, "fx", 0.08)
+    b = tr.beat
+    nbar = int(SECONDS / (4 * b)) + 1
+    for i in range(nbar):
+        t0 = i * 4 * b
+        c = ch[i % 4]
+        for e in range(8):
+            nn = c[[0, 1, 2, 3, 2, 1, 2, 3][e]]
+            tr.add("keys", tr.epiano(hz(nn), 1.6) * 0.14, t0 + e * b / 2)
+        if i >= 2:
+            tr.add("lead", tr.epiano(hz(mel[i % 4]), 2.5) * 0.18, t0)
+            tr.add("lead", tr.epiano(hz(mel[(i + 1) % 4]), 1.5) * 0.12, t0 + 2.5 * b)
+        tr.add("bass", tr.sub(hz(c[0]) / 2, 3.8 * b) * 0.35, t0)
+        if i < 4:
+            continue
+        tr.add("drums", tr.kick(0.5), t0)
+        tr.kicks.append(t0)
+        tr.add("drums", tr.snare(200) * 0.25, t0 + 2 * b)
+    return tr.mix({"drums": 0.6, "bass": 0.8, "keys": 1.0, "lead": 0.9, "fx": 0.9}, duck=0.15, hi=8000)
+
+
+STYLES = {"lofi": lofi, "chill": chill, "house": house, "tech": tech, "acoustic": acoustic, "marimba": marimba, "synthwave": synthwave, "piano": piano}
 
 
 def save(path, data):
