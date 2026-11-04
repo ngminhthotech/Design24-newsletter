@@ -1,7 +1,16 @@
 {
-  "_ghi_chu": "Điền sau khi có tài khoản Buffer của Design24: chạy python -m autopost.buffer channels rồi chép id vào đây.",
-  "organization": "",
-  "facebook": {"id": "", "name": "Học viện Design24"},
-  "tiktok": {"id": "", "name": "design24"},
-  "youtube": {"id": "", "name": "Design24"}
+  "_ghi_chu": "Mã kênh Buffer của Design24 (tài khoản hocviendesign24.vn). Chạy python3 -m autopost.buffer channels để lấy id. Chỉ đặt confirmed=true sau khi người dùng xác nhận đúng 3 kênh.",
+  "confirmed": false,
+  "facebook": {
+    "id": "6ae9ad13e29c69a1714823c8",
+    "name": "Học Viện Design24"
+  },
+  "tiktok": {
+    "id": "6aeabb07e29c69a17156ff09",
+    "name": "design24_hocthietke"
+  },
+  "youtube": {
+    "id": "6ad9b681778b240e2f88a642",
+    "name": "Học Viện Design24"
+  }
 }

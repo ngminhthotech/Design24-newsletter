@@ -3,7 +3,7 @@
 Hệ thống soạn và đăng video "kiến thức thiết kế" tự động cho 3 kênh của Học viện Design24 (Facebook, TikTok, YouTube Shorts).
 Code dùng lại từ luồng Tìm Việc Số (`ngminhthotech/auto-post`): đăng qua Buffer, URL công khai từ nhánh `media`, giọng đọc Vbee, video Remotion, logo D24.
 
-**Trạng thái:** đang duyệt video mẫu. Chưa bật lịch đăng, chưa đăng bài nào.
+**Trạng thái:** đã có luồng tự động 2 bài/ngày (xem `ROUTINE.md`), chưa bật lịch: chờ khóa Buffer của tài khoản Design24 và xác nhận kênh trong `channels.json`.
 
 ## Cấu trúc
 
@@ -15,6 +15,9 @@ Code dùng lại từ luồng Tìm Việc Số (`ngminhthotech/auto-post`): đă
 | `examples/bai-mau-kienthuc/` | Chú thích mẫu cho Facebook, TikTok, YouTube |
 | `video/src/kienthuc/` | Mẫu video Remotion "KienThuc" 1080x1920: cảnh `hook`, `ratio`, `point`, `compare`, `list`, `outro`; phụ đề, nhạc nền, chuyển cảnh |
 | `video/src/ui.tsx`, `brand.ts` | Nền, logo và màu nhận diện Design24 |
+| `autopost/run.py` | Chạy trọn luồng một bài: giọng Vbee, dựng, nén, tải lên nhánh `media`, hẹn giờ Buffer 3 kênh (`--dry-run`, `--draft`, `--at`) |
+| `assets/chu-de.md` | Danh sách chủ đề cho 2 khung giờ 11:30 và 20:00 |
+| `examples/artboard-khoang-trang.json` | Kịch bản mẫu dùng cảnh chung: `fix`, `versus`, `dodont`, `point`, `list` |
 | `render/video.sh` | Dựng video MP4 từ JSON (thêm `--voice` để có giọng đọc) |
 | `render/voice.py` | Giọng đọc Vbee cho từng cảnh; cách đọc từ chuyên ngành trong `assets/phat-am.json` |
 | `render/music.py` | Nhạc nền và âm chuyển cảnh tự tổng hợp (không dính bản quyền) |

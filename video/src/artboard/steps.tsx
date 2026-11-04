@@ -12,19 +12,20 @@ import { applyRole, CLICK, Cursor, hexToHsv, mix, type Palette, Picker, Poster, 
 export const CW = 900;
 export const CH = 1300;
 const PY = 190;
-const DARK = "#1B1B1B";
+export const DARK = "#1B1B1B";
+export const POSTER_Y = 190;
 
-export type Palettes = { bad: Palette; good: Palette; overuse: Palette };
+export type Palettes = Record<string, Palette>;
 export type StepProps = { pal: Palettes; vd: number }; // vd: số khung của lời đọc
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
-const useIn = (delay: number, damping = 13, stiffness = 170) => {
+export const useIn = (delay: number, damping = 13, stiffness = 170) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   return spring({ frame: frame - delay, fps, config: { damping, stiffness, mass: 0.7 } });
 };
 
-const Pop: React.FC<{ at: number; vol?: number }> = ({ at, vol = 0.5 }) => (
+export const Pop: React.FC<{ at: number; vol?: number }> = ({ at, vol = 0.5 }) => (
   <Sequence from={Math.max(0, Math.round(at))} durationInFrames={20} layout="none">
     <Audio src={staticFile("pop.wav")} volume={vol} />
   </Sequence>
@@ -47,7 +48,7 @@ export const Header: React.FC<{ num?: string; numColor?: string; title: string; 
 };
 
 // Đặt poster vào thẻ, có máy quay zoom tới điểm (fx, fy) của poster
-const Stage: React.FC<{ zoom?: number; fx?: number; fy?: number; t?: number; scale?: number; top?: number; children: React.ReactNode }> = ({
+export const Stage: React.FC<{ zoom?: number; fx?: number; fy?: number; t?: number; scale?: number; top?: number; children: React.ReactNode }> = ({
   zoom = 1, fx = PW / 2, fy = PH / 2, t = 0, scale = 1, top = PY, children,
 }) => {
   const z = 1 + (zoom - 1) * t;
@@ -79,10 +80,11 @@ const SwatchRow: React.FC<{ good: Palette; done: number; fresh?: number }> = ({ 
   </div>
 );
 
-const Tiny: React.FC = () => <div style={{ position: "absolute", left: 40, top: 26, fontFamily: BODY, fontWeight: 800, fontSize: 20, color: "#8A857B", letterSpacing: 0.5 }}>design24</div>;
+export const Tiny: React.FC = () => <div style={{ position: "absolute", left: 40, top: 26, fontFamily: BODY, fontWeight: 800, fontSize: 20, color: "#8A857B", letterSpacing: 0.5 }}>design24</div>;
 
 // ---------------- 1. Mở đầu ----------------
-export const Cover: React.FC<StepProps> = ({ pal }) => {
+export type CoverText = { pre?: string; word?: string; post?: string; swatches?: string[] };
+export const Cover: React.FC<StepProps & CoverText> = ({ pal, pre = "BẠN ĐÃ PHỐI MÀU", word = "60-30-10", post = "đúng cách chưa?", swatches }) => {
   const frame = useCurrentFrame();
   const a = useIn(0, 12, 200);
   const b = useIn(7, 12, 160);
@@ -91,19 +93,19 @@ export const Cover: React.FC<StepProps> = ({ pal }) => {
   const g = pal.good;
   return (
     <>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 330, display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: swatches || word === "60-30-10" ? 330 : 400, display: "flex", flexDirection: "column", alignItems: "center" }}>
         <div style={{ fontFamily: BODY, fontWeight: 800, fontSize: 30, color: "#8A857B", marginBottom: 14, opacity: a }}>design24</div>
-        <div style={{ fontFamily: HEAD, fontWeight: 700, fontSize: 104, color: DARK, lineHeight: 1, scale: String(0.7 + 0.3 * a), opacity: a }}>BẠN ĐÃ PHỐI MÀU</div>
+        <div style={{ fontFamily: HEAD, fontWeight: 700, fontSize: Math.min(104, 1900 / Math.max(1, pre.length)), whiteSpace: "nowrap", color: DARK, lineHeight: 1, scale: String(0.7 + 0.3 * a), opacity: a }}>{pre}</div>
         <div style={{ position: "relative", marginTop: 26, padding: "0 34px", background: "rgba(25,181,254,.12)", border: "3px solid #19B5FE", clipPath: `inset(0 ${100 - box}% 0 0)` }}>
-          <div style={{ fontFamily: HEAD, fontWeight: 700, fontSize: 196, lineHeight: 1.08, letterSpacing: -2, whiteSpace: "nowrap", backgroundImage: `linear-gradient(90deg, ${g.panel} 0%, ${C.blue2} 55%, ${g.accent} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", scale: String(0.85 + 0.15 * b) }}>
-            60-30-10
+          <div style={{ fontFamily: HEAD, fontWeight: 700, fontSize: Math.min(196, 1650 / Math.max(1, word.length)), lineHeight: 1.08, letterSpacing: -2, whiteSpace: "nowrap", backgroundImage: `linear-gradient(90deg, ${g.panel} 0%, ${C.blue2} 55%, ${g.accent} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", scale: String(0.85 + 0.15 * b) }}>
+            {word}
           </div>
           <div style={{ position: "absolute", left: -14, top: -16, width: 0, height: 0, borderLeft: "14px solid transparent", borderRight: "14px solid transparent", borderTop: "22px solid #19B5FE" }} />
           <div style={{ position: "absolute", right: -14, bottom: -18, width: 0, height: 0, borderLeft: "14px solid transparent", borderRight: "14px solid transparent", borderBottom: "22px solid #19B5FE" }} />
         </div>
-        <div style={{ marginTop: 34, background: DARK, color: "#fff", fontFamily: BODY, fontWeight: 800, fontSize: 60, padding: "8px 30px 14px", rotate: "-3deg", scale: String(c), borderRadius: 6 }}>đúng cách chưa?</div>
+        <div style={{ marginTop: 34, background: DARK, color: "#fff", fontFamily: BODY, fontWeight: 800, fontSize: Math.min(60, 1500 / Math.max(1, post.length)), whiteSpace: "nowrap", padding: "8px 30px 14px", rotate: "-3deg", scale: String(c), borderRadius: 6 }}>{post}</div>
         <div style={{ marginTop: 70, width: 600, height: 26, borderRadius: 13, overflow: "hidden", display: "flex", opacity: ease(frame, 24, 34, [0, 1]) }}>
-          {[g.bg, g.panel, g.accent].map((col, i) => (
+          {(swatches ?? (word === "60-30-10" ? [g.bg, g.panel, g.accent] : [])).map((col, i) => (
             <div key={i} style={{ width: `${[60, 30, 10][i] * ease(frame, 24 + i * 5, 40 + i * 5, [0, 1])}%`, background: col, border: i === 0 ? "2px solid #DAD5CA" : undefined, boxSizing: "border-box" }} />
           ))}
         </div>

@@ -6,7 +6,8 @@ import { fade } from "@remotion/transitions/fade";
 import { slide } from "@remotion/transitions/slide";
 import { BODY, HEAD, loadFonts } from "./fonts";
 import type { Role } from "./poster";
-import { Bad, Compare, Cover, CH, CW, Examples, Flow, Mistake, type Palettes, Pick, Ratio, Outro, Wheel } from "./steps";
+import { Bad, Compare, Cover, type CoverText, CH, CW, Examples, Flow, Mistake, type Palettes, Pick, Ratio, Outro, Wheel } from "./steps";
+import { DoDont, type DoDontScene, Fix, type FixScene, List, type ListScene, Point, type PointScene, Versus, type VersusScene } from "./steps2";
 
 // Video "bảng vẽ" (mẫu Artboard): nền tối có chữ chìm DESIGN24, logo trên cùng, một tấm thẻ giấy ở giữa
 // nơi thiết kế được sửa trực tiếp từng bước, chú thích chữ đen trên nền vàng bên dưới thẻ.
@@ -14,7 +15,13 @@ import { Bad, Compare, Cover, CH, CW, Examples, Flow, Mistake, type Palettes, Pi
 loadFonts();
 
 export type ABScene =
-  | { type: "cover" | "bad" | "compare" | "flow" | "ratio" | "mistake" | "wheel" | "examples" | "outro"; say: string }
+  | ({ type: "cover"; say: string } & CoverText)
+  | { type: "bad" | "compare" | "flow" | "ratio" | "mistake" | "wheel" | "examples" | "outro"; say: string }
+  | FixScene
+  | VersusScene
+  | DoDontScene
+  | PointScene
+  | ListScene
   | { type: "pick"; role: Role; pct: string; name: string; note: string; say: string };
 
 export type ArtboardData = {
@@ -40,7 +47,7 @@ const lines = (d: ArtboardData) =>
     return v ? { text: v.text, dur: v.dur, src: v.src as string | undefined } : { text: s.say, dur: Math.max(2, s.say.length / CPS), src: undefined };
   });
 
-const MIN: Record<ABScene["type"], number> = { cover: 75, bad: 100, pick: 110, compare: 100, flow: 100, ratio: 100, mistake: 120, wheel: 110, examples: 110, outro: 120 };
+const MIN: Record<ABScene["type"], number> = { cover: 75, bad: 100, pick: 110, compare: 100, flow: 100, ratio: 100, mistake: 120, wheel: 110, examples: 110, outro: 120, fix: 110, versus: 100, dodont: 110, point: 100, list: 110 };
 const durations = (d: ArtboardData) => lines(d).map((l, i) => Math.max(MIN[d.scenes[i].type], DELAY + Math.ceil(l.dur * FPS) + T + 10));
 export const abTotalFrames = (d: ArtboardData) => durations(d).reduce((a, x) => a + x, 0) - (d.scenes.length - 1) * T + 20;
 
@@ -113,7 +120,7 @@ const NOISE = `url("data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns="ht
 const step = (s: ABScene, d: ArtboardData, vd: number) => {
   const p = { pal: d.palettes, vd };
   switch (s.type) {
-    case "cover": return <Cover {...p} />;
+    case "cover": return <Cover {...p} pre={s.pre} word={s.word} post={s.post} swatches={s.swatches} />;
     case "bad": return <Bad {...p} />;
     case "pick": return <Pick {...p} role={s.role} pct={s.pct} name={s.name} note={s.note} />;
     case "compare": return <Compare {...p} />;
@@ -123,6 +130,11 @@ const step = (s: ABScene, d: ArtboardData, vd: number) => {
     case "wheel": return <Wheel {...p} />;
     case "examples": return <Examples {...p} />;
     case "outro": return <Outro {...p} sources={d.sources} />;
+    case "fix": return <Fix {...p} s={s} />;
+    case "versus": return <Versus {...p} s={s} />;
+    case "dodont": return <DoDont {...p} s={s} />;
+    case "point": return <Point {...p} s={s} />;
+    case "list": return <List {...p} s={s} />;
   }
 };
 

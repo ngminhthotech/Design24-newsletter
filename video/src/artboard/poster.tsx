@@ -1,7 +1,7 @@
 import React from "react";
 import { interpolateColors } from "remotion";
 import { Ico } from "../kienthuc/kit";
-import { BODY, HEAD } from "./fonts";
+import { BODY, HEAD, SERIF } from "./fonts";
 
 // Poster "Khóa học thiết kế đồ họa" vẽ bằng code: vật mẫu được sửa trực tiếp trên bảng vẽ.
 // Mỗi phần tử gắn một vai trò màu: bg (60%), panel (30%), accent (10%).
@@ -44,52 +44,132 @@ export const mix = (a: Palette, b: Palette, t: number): Palette => {
   return Object.fromEntries(k.map((x) => [x, interpolateColors(t, [0, 1], [a[x], b[x]])])) as Palette;
 };
 
-export const Poster: React.FC<{ p: Palette; shadow?: boolean }> = ({ p, shadow = true }) => (
-  <div style={{ position: "relative", width: PW, height: PH, borderRadius: 18, overflow: "hidden", background: p.bg, boxShadow: shadow ? "0 30px 60px rgba(0,0,0,.18)" : undefined }}>
-    {/* khối màu phụ */}
-    <div style={{ position: "absolute", left: 0, top: 0, width: PW, height: 470, background: p.panel, borderBottomRightRadius: 160, overflow: "hidden" }}>
-      <div style={{ position: "absolute", right: -90, top: -90, width: 380, height: 380, borderRadius: "50%", background: p.deco, opacity: 0.55 }} />
-      <div style={{ position: "absolute", right: 120, top: 250, display: "grid", gridTemplateColumns: "repeat(5, 14px)", gap: 14, opacity: 0.4 }}>
-        {Array.from({ length: 15 }).map((_, i) => (
-          <div key={i} style={{ width: 8, height: 8, borderRadius: 4, background: p.card }} />
-        ))}
-      </div>
-      <div style={{ position: "absolute", left: 56, top: 62, color: p.card }}>
-        <div style={{ fontFamily: HEAD, fontWeight: 500, fontSize: 40, letterSpacing: 6 }}>KHÓA HỌC</div>
-        <div style={{ fontFamily: HEAD, fontWeight: 700, fontSize: 138, lineHeight: 1.0, letterSpacing: -1, marginTop: 6 }}>
-          THIẾT KẾ
-          <br />
-          ĐỒ HỌA
+// Các "núm chỉnh" của poster, để minh họa nhiều chủ đề (khoảng cách, căn lề, phân cấp, phông chữ...).
+// Số thì nội suy mượt khi chuyển từ bản sai sang bản đúng; font/align đổi ở giữa chuyển cảnh.
+export type PosterText = { kicker: string; title: string; sub: string; items: string[]; button: string; tag?: string; tagBig?: string; site?: string };
+export type PosterFont = "oswald" | "sans" | "serif" | "mixed";
+export type PosterStyle = {
+  palette?: string | Palette; // tên bảng màu trong `palettes` của JSON hoặc bảng màu đầy đủ
+  font?: PosterFont;
+  align?: "left" | "center";
+  gap?: number; // hệ số khoảng cách dọc phần nội dung (1 = chuẩn, 0.6 = chật)
+  pad?: number; // lề trái (px), chuẩn 56
+  head?: number; // hệ số cỡ tiêu đề (1 = chuẩn)
+  body?: number; // hệ số cỡ chữ nội dung
+  track?: number; // giãn chữ tiêu đề (px)
+  lead?: number; // giãn dòng tiêu đề (1.0 chuẩn)
+  mis?: number; // 0..1: mức lệch lề ngẫu nhiên (minh họa căn lề sai)
+  grid?: number; // 0..1: hiện lưới cột
+  noise?: number; // 0..1: thêm chi tiết thừa (minh họa thiết kế rối)
+  text?: Partial<PosterText>;
+};
+
+export const DEFAULT_TEXT: PosterText = {
+  kicker: "KHÓA HỌC",
+  title: "THIẾT KẾ\nĐỒ HỌA",
+  sub: "Từ con số 0 đến tự tin nhận dự án",
+  items: ["12 buổi thực hành", "Học cùng chuyên gia", "Làm dự án thật"],
+  button: "ĐĂNG KÝ NGAY",
+  tag: "ƯU ĐÃI",
+  tagBig: "-30%",
+  site: "design24.vn",
+};
+
+const FONTS: Record<PosterFont, { head: string; kicker: string; sub: string; item: string; button: string }> = {
+  oswald: { head: HEAD, kicker: HEAD, sub: BODY, item: BODY, button: HEAD },
+  sans: { head: BODY, kicker: BODY, sub: BODY, item: BODY, button: BODY },
+  serif: { head: SERIF, kicker: BODY, sub: BODY, item: BODY, button: BODY },
+  mixed: { head: SERIF, kicker: "'JetBrains Mono', monospace", sub: HEAD, item: "Inter, sans-serif", button: "'Courier 10 Pitch', 'FreeMono', monospace" },
+};
+const MIS = [0, 34, -22, 48, 14, -30, 26];
+
+export const Poster: React.FC<{ p: Palette; shadow?: boolean; st?: PosterStyle }> = ({ p, shadow = true, st = {} }) => {
+  const f = FONTS[st.font ?? "oswald"];
+  const center = st.align === "center";
+  const g = st.gap ?? 1;
+  const pad = st.pad ?? 56;
+  const hs = st.head ?? 1;
+  const bs = st.body ?? 1;
+  const mis = st.mis ?? 0;
+  const tx = { ...DEFAULT_TEXT, ...(st.text ?? {}) };
+  const y0 = 500;
+  const L = (i: number, w = 0): React.CSSProperties => (center ? { left: 0, width: PW, textAlign: "center", translate: `${MIS[i] * mis}px 0px` } : { left: pad + MIS[i] * mis, width: w || undefined });
+  const serif = st.font === "serif" || st.font === "mixed";
+  return (
+    <div style={{ position: "relative", width: PW, height: PH, borderRadius: 18, overflow: "hidden", background: p.bg, boxShadow: shadow ? "0 30px 60px rgba(0,0,0,.18)" : undefined }}>
+      {/* khối màu phụ */}
+      <div style={{ position: "absolute", left: 0, top: 0, width: PW, height: 470, background: p.panel, borderBottomRightRadius: center ? 0 : 160, overflow: "hidden" }}>
+        <div style={{ position: "absolute", right: -90, top: -90, width: 380, height: 380, borderRadius: "50%", background: p.deco, opacity: 0.55 }} />
+        <div style={{ position: "absolute", right: 120, top: 250, display: "grid", gridTemplateColumns: "repeat(5, 14px)", gap: 14, opacity: 0.4 }}>
+          {Array.from({ length: 15 }).map((_, i) => (
+            <div key={i} style={{ width: 8, height: 8, borderRadius: 4, background: p.card }} />
+          ))}
+        </div>
+        <div style={{ position: "absolute", top: 62, color: p.card, ...L(0) }}>
+          <div style={{ fontFamily: f.kicker, fontWeight: 500, fontSize: 40 * Math.min(1.2, Math.max(0.8, bs)), letterSpacing: 6 }}>{tx.kicker}</div>
+          <div style={{ fontFamily: f.head, fontWeight: 700, fontSize: (serif ? 112 : 138) * hs, lineHeight: st.lead ?? (serif ? 1.08 : 1.0), letterSpacing: st.track ?? -1, marginTop: 6, whiteSpace: "pre-line", translate: `${MIS[1] * mis * 0.6}px 0px` }}>
+            {tx.title}
+          </div>
         </div>
       </div>
-    </div>
-    {/* nhãn giảm giá: màu nhấn */}
-    <div style={{ position: "absolute", left: 530, top: 390, width: 150, height: 150, borderRadius: "50%", background: p.accent, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", rotate: "-12deg", boxShadow: "0 12px 24px rgba(0,0,0,.18)" }}>
-      <div style={{ fontFamily: BODY, fontWeight: 700, fontSize: 22 }}>ƯU ĐÃI</div>
-      <div style={{ fontFamily: HEAD, fontWeight: 700, fontSize: 56, lineHeight: 1 }}>-30%</div>
-    </div>
-    {/* nội dung trên nền */}
-    <div style={{ position: "absolute", left: 56, top: 520, width: 460, fontFamily: BODY, fontWeight: 700, fontSize: 32, lineHeight: 1.3, color: p.ink }}>Từ con số 0 đến tự tin nhận dự án</div>
-    {[
-      ["calendar", "12 buổi thực hành"],
-      ["follow", "Học cùng chuyên gia"],
-      ["briefcase", "Làm dự án thật"],
-    ].map(([ic, t], i) => (
-      <div key={t} style={{ position: "absolute", left: 56, top: 620 + i * 58, display: "flex", alignItems: "center", gap: 16, fontFamily: BODY, fontWeight: 500, fontSize: 26, color: p.ink }}>
-        <div style={{ width: 40, height: 40, borderRadius: 12, background: p.panel, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Ico name={ic === "calendar" ? "book" : ic} size={22} color={p.card} />
+      {/* nhãn: màu nhấn */}
+      {tx.tagBig && (
+        <div style={{ position: "absolute", left: 530, top: 390, width: 150, height: 150, borderRadius: "50%", background: p.accent, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", rotate: "-12deg", boxShadow: "0 12px 24px rgba(0,0,0,.18)" }}>
+          <div style={{ fontFamily: BODY, fontWeight: 700, fontSize: 22 }}>{tx.tag}</div>
+          <div style={{ fontFamily: HEAD, fontWeight: 700, fontSize: 56, lineHeight: 1 }}>{tx.tagBig}</div>
         </div>
-        {t}
+      )}
+      {/* nội dung trên nền */}
+      <div style={{ position: "absolute", top: y0 + 20 * g, fontFamily: f.sub, fontWeight: 700, fontSize: 32 * bs, lineHeight: 1.3, color: p.ink, ...L(2, center ? 0 : 460) }}>{tx.sub}</div>
+      {tx.items.map((t, i) => (
+        <div key={i} style={{ position: "absolute", top: y0 + 120 * g + i * 58 * g, display: "flex", alignItems: "center", justifyContent: center ? "center" : undefined, gap: 16, fontFamily: f.item, fontWeight: 500, fontSize: 26 * bs, color: p.ink, ...L(3 + i) }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: p.panel, display: "flex", alignItems: "center", justifyContent: "center", flex: "none" }}>
+            <Ico name={["book", "follow", "briefcase", "check"][i % 4]} size={22} color={p.card} />
+          </div>
+          {t}
+        </div>
+      ))}
+      {/* nút bấm: màu nhấn */}
+      <div style={{ position: "absolute", left: center ? (PW - 330) / 2 : pad + MIS[6] * mis, top: y0 + 300 * g, width: 330, height: 96, borderRadius: 48, background: p.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontFamily: f.button, fontWeight: 700, fontSize: 36 * Math.min(1.15, bs), letterSpacing: 1 }}>
+        {tx.button}
+        <Ico name="send" size={28} />
       </div>
-    ))}
-    {/* nút bấm: màu nhấn */}
-    <div style={{ position: "absolute", left: 56, top: 800, width: 330, height: 96, borderRadius: 48, background: p.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontFamily: HEAD, fontWeight: 700, fontSize: 36, letterSpacing: 1 }}>
-      ĐĂNG KÝ NGAY
-      <Ico name="send" size={28} />
+      {!center && <div style={{ position: "absolute", right: 50, top: y0 + 336 * g, fontFamily: BODY, fontWeight: 700, fontSize: 24, color: p.ink, opacity: 0.65 }}>{tx.site}</div>}
+      {/* chi tiết thừa */}
+      {(st.noise ?? 0) > 0.01 && (
+        <div style={{ position: "absolute", inset: 0, opacity: st.noise, pointerEvents: "none" }}>
+          {[
+            [470, 600, "★", 70, "#E53935"], [600, 700, "NEW!", 34, "#43A047"], [60, 440, "HOT", 30, "#8E24AA"], [380, 900, "☺", 56, "#1E88E5"], [520, 860, "SALE", 30, "#E53935"],
+          ].map(([x, y, t, fs, c], i) => (
+            <div key={i} style={{ position: "absolute", left: x as number, top: y as number, fontFamily: HEAD, fontWeight: 700, fontSize: fs as number, color: c as string, rotate: `${(i % 2 ? 1 : -1) * 14}deg`, border: `4px solid ${c}`, padding: "0 10px", borderRadius: 10, background: "#fff" }}>{t}</div>
+          ))}
+        </div>
+      )}
+      {/* lưới cột */}
+      {(st.grid ?? 0) > 0.01 && (
+        <div style={{ position: "absolute", inset: 0, opacity: st.grid, display: "flex", gap: 24, padding: `0 ${pad}px`, pointerEvents: "none" }}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} style={{ flex: 1, background: "rgba(255,64,129,.12)", borderLeft: "2px solid rgba(255,64,129,.6)", borderRight: "2px solid rgba(255,64,129,.6)" }} />
+          ))}
+        </div>
+      )}
     </div>
-    <div style={{ position: "absolute", right: 50, top: 836, fontFamily: BODY, fontWeight: 700, fontSize: 24, color: p.ink, opacity: 0.65 }}>design24.vn</div>
-  </div>
-);
+  );
+};
+
+// Nội suy giữa hai kiểu poster: số chạy mượt, font/căn lề/chữ đổi khi t >= 0.5
+const NUM: (keyof PosterStyle)[] = ["gap", "pad", "head", "body", "track", "lead", "mis", "grid", "noise"];
+const DEF: Partial<Record<keyof PosterStyle, number>> = { gap: 1, pad: 56, head: 1, body: 1, track: -1, mis: 0, grid: 0, noise: 0 };
+export const lerpStyle = (a: PosterStyle, b: PosterStyle, t: number): PosterStyle => {
+  const out: PosterStyle = { ...(t < 0.5 ? a : b) };
+  for (const k of NUM) {
+    const va = (a[k] as number | undefined) ?? DEF[k];
+    const vb = (b[k] as number | undefined) ?? DEF[k];
+    if (va === undefined || vb === undefined) continue;
+    (out as Record<string, unknown>)[k] = va + (vb - va) * t;
+  }
+  return out;
+};
 
 // ---------- màu ----------
 export const hexToHsv = (hex: string) => {
