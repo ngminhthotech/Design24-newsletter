@@ -10,6 +10,8 @@ Code dùng lại từ luồng Tìm Việc Số (`ngminhthotech/auto-post`): đă
 | Đường dẫn | Việc |
 | --- | --- |
 | `examples/kienthuc-mau.json` | Kịch bản mẫu "Quy tắc 60-30-10": danh sách cảnh, mỗi cảnh có lời đọc `say` |
+| `examples/artboard-60-30-10.json` | Kịch bản mẫu kiểu "bảng vẽ" (giống phong cách @hudesign): 12 bước sửa một poster thật, bảng màu `palettes` |
+| `video/src/artboard/` | Mẫu video Remotion "Artboard": nền tối chữ chìm DESIGN24, thẻ giấy ở giữa, bảng chọn màu, con trỏ, so sánh trước/sau, vòng màu; chú thích chữ đen nền vàng. Phông Oswald + Be Vietnam Pro đóng gói trong `video/public/fonts` |
 | `examples/bai-mau-kienthuc/` | Chú thích mẫu cho Facebook, TikTok, YouTube |
 | `video/src/kienthuc/` | Mẫu video Remotion "KienThuc" 1080x1920: cảnh `hook`, `ratio`, `point`, `compare`, `list`, `outro`; phụ đề, nhạc nền, chuyển cảnh |
 | `video/src/ui.tsx`, `brand.ts` | Nền, logo và màu nhận diện Design24 |
@@ -28,6 +30,7 @@ pip install -r requirements.txt
 render/video.sh examples/kienthuc-mau.json out/video.mp4            # chưa có giọng: phụ đề theo tốc độ ước lượng
 python3 render/voice.py examples/kienthuc-mau.json --dry-run         # xem lời đọc
 render/video.sh examples/kienthuc-mau.json out/video.mp4 --voice    # có giọng Vbee
+render/video.sh examples/artboard-60-30-10.json out/video.mp4 --voice  # mẫu bảng vẽ (tự chọn khi JSON có "palettes")
 ```
 
 Xem trước và chỉnh mẫu: `cd video && npx remotion studio`.
