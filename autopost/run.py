@@ -11,6 +11,7 @@ Ví dụ:
   python3 -m autopost.run <thư mục> --dry-run                       # chỉ dựng video, không tải lên, không gọi Buffer
   python3 -m autopost.run <thư mục> --draft                         # lưu nháp trong Buffer (không đăng)
   python3 -m autopost.run <thư mục> --at 2026-11-05T11:30:00+07:00  # hẹn giờ đăng
+  python3 -m autopost.run <thư mục> --now                           # đăng ngay
 
 Kết quả ghi vào <thư mục>/ket-qua.json. Chỉ đăng khi channels.json có "confirmed": true và mỗi id kênh
 khớp đúng tên, đúng mạng trong tài khoản Buffer (tránh đăng nhầm sang thương hiệu khác).
@@ -69,13 +70,14 @@ def main(argv=None):
     p = argparse.ArgumentParser(prog="autopost.run")
     p.add_argument("folder")
     p.add_argument("--at", help="giờ đăng ISO 8601 (không ghi múi giờ thì hiểu là giờ Việt Nam)")
+    p.add_argument("--now", action="store_true", help="đăng ngay")
     p.add_argument("--draft", action="store_true", help="chỉ lưu nháp trong Buffer")
     p.add_argument("--dry-run", action="store_true", help="chỉ dựng video, không tải lên, không gọi Buffer")
     p.add_argument("--no-voice", action="store_true", help="dựng không có giọng (thử nhanh)")
     p.add_argument("--rerender", action="store_true", help="dựng lại dù đã có video.mp4")
     a = p.parse_args(argv)
-    if not (a.dry_run or a.draft or a.at):
-        p.error("chọn một trong --dry-run, --draft hoặc --at")
+    if not (a.dry_run or a.draft or a.at or a.now):
+        p.error("chọn một trong --dry-run, --draft, --now hoặc --at")
 
     folder = Path(a.folder).resolve()
     text = {name: (folder / name).read_text(encoding="utf-8").strip() for name in
