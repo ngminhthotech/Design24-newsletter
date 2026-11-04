@@ -27,7 +27,9 @@ from pathlib import Path
 from autopost import buffer, media
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "render"))
-import tracks  # noqa: E402
+import tracks  # noqa: E402,F401
+
+MUSIC = "nhac-marimba.wav"
 
 ROOT = Path(__file__).resolve().parent.parent
 CHANNELS = ROOT / "channels.json"
@@ -92,11 +94,10 @@ def main(argv=None):
 
     video = folder / "video.mp4"
     if a.rerender or not video.exists():
-        # Xoay vòng nhạc nền tự tạo (render/tracks.py) theo tên thư mục bài, nếu kịch bản chưa chọn
+        # Nhạc nền mặc định: bản marimba tự tạo (render/tracks.py), người dùng chọn ngày 04/11/2026
         spec = json.loads((folder / "video.json").read_text(encoding="utf-8"))
         if "palettes" in spec and not spec.get("music"):
-            names = sorted(tracks.STYLES)
-            spec["music"] = f"nhac-{names[sum(map(ord, folder.name)) % len(names)]}.wav"
+            spec["music"] = MUSIC
             (folder / "video.json").write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
         args = [ROOT / "render" / "video.sh", folder / "video.json", video] + ([] if a.no_voice else ["--voice"])
         sh(*args)

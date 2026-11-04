@@ -13,7 +13,7 @@ Thư mục làm việc `D`: `/mnt/project-files/design24-auto-post/` nếu có. 
 
 1. `channels.json` phải có `"confirmed": true`. Nếu chưa: dừng, chỉ ghi báo cáo "chưa xác nhận kênh".
 2. `python3 -m autopost.buffer channels` phải liệt kê đúng 3 kênh Design24 có trong `channels.json`. Thấy kênh của thương hiệu khác (ví dụ Tìm Việc Số) mà không thấy kênh Design24: dừng và báo lỗi khóa Buffer. **Không bao giờ đăng vào kênh không có trong `channels.json`.**
-3. `pip install -r requirements.txt` nếu thiếu thư viện. Nhạc nền là nhạc tự tạo, không dùng nhạc có bản quyền: `autopost.run` tự xoay vòng 8 bản trong `render/tracks.py`. Không cần đặt trường `music`.
+3. `pip install -r requirements.txt` nếu thiếu thư viện. Nhạc nền là nhạc tự tạo, không dùng nhạc có bản quyền: `autopost.run` tự dùng bản marimba (`render/tracks.py`), do người dùng chọn. Không cần đặt trường `music`.
 
 ## 1. Chọn chủ đề
 
