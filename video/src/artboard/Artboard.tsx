@@ -25,6 +25,7 @@ export type ArtboardData = {
   palettes: Palettes;
   scenes: ABScene[];
   voice?: { src: string; dur: number; text: string }[];
+  music?: string; // file nhạc nền trong video/public (mặc định music.wav do render/music.py tạo)
 };
 
 export const FPS = 30;
@@ -165,7 +166,7 @@ export const Artboard: React.FC<ArtboardData> = (data) => {
         </TransitionSeries>
       </div>
       <Audio
-        src={staticFile("music.wav")}
+        src={staticFile(data.music ?? "music.wav")}
         loop
         volume={(f) => interpolate(f, [0, 15, durationInFrames - 45, durationInFrames], [0, 0.5, 0.5, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) * duck(f)}
       />
