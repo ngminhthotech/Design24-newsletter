@@ -2,7 +2,7 @@
 
 Routine chọn theo thứ tự từ trên xuống, bỏ qua chủ đề đã đăng trong 45 ngày (xem `da-dang.md`). Có thể thêm chủ đề mới vào cuối mỗi nhóm.
 
-## 11:30 Mẹo thiết kế (màu, bố cục)
+## 9:00 Mẹo thiết kế (màu, bố cục)
 
 1. Quy tắc 60-30-10 trong phối màu (đã có mẫu `examples/artboard-60-30-10.json`)
 2. Khoảng trắng: cho thiết kế "thở" (đã có mẫu `examples/artboard-khoang-trang.json`)
@@ -25,7 +25,7 @@ Routine chọn theo thứ tự từ trên xuống, bỏ qua chủ đề đã đ�
 19. Nền tối hay nền sáng: khi nào dùng
 20. Ít chi tiết hơn: bỏ bớt để nổi bật hơn
 
-## 20:00 Chữ và thương hiệu
+## 19:00 Chữ và thương hiệu
 
 1. Phân cấp chữ: tiêu đề, phụ đề, nội dung
 2. Ghép cặp phông chữ: tối đa 2 phông

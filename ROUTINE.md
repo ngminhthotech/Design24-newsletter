@@ -4,8 +4,8 @@ Mỗi tối routine chạy một lần, soạn và **hẹn giờ 2 video cho ng�
 
 | Giờ đăng (giờ Việt Nam) | Nội dung | Độ dài |
 | --- | --- | --- |
-| 11:30 | Mẹo thiết kế: màu, bố cục, khoảng trắng, căn lề, lưới | 45 đến 70 giây |
-| 20:00 | Chữ và thương hiệu: phông chữ, phân cấp, tương phản, logo, poster | 45 đến 70 giây |
+| 9:00 | Mẹo thiết kế: màu, bố cục, khoảng trắng, căn lề, lưới | 45 đến 70 giây |
+| 19:00 | Chữ và thương hiệu: phông chữ, phân cấp, tương phản, logo, poster | 45 đến 70 giây |
 
 Thư mục làm việc `D`: `/mnt/project-files/design24-auto-post/` nếu có. Nếu phiên không có thư mục đó, dùng `nhat-ky/` trong repo và cuối buổi commit `nhat-ky/da-dang.md`, `nhat-ky/bao-cao/` lên nhánh `nhat-ky` (không đưa video vào nhánh này; video đã nằm ở nhánh `media`).
 
@@ -13,7 +13,7 @@ Thư mục làm việc `D`: `/mnt/project-files/design24-auto-post/` nếu có. 
 
 1. `channels.json` phải có `"confirmed": true`. Nếu chưa: dừng, chỉ ghi báo cáo "chưa xác nhận kênh".
 2. `python3 -m autopost.buffer channels` phải liệt kê đúng 3 kênh Design24 có trong `channels.json`. Thấy kênh của thương hiệu khác (ví dụ Tìm Việc Số) mà không thấy kênh Design24: dừng và báo lỗi khóa Buffer. **Không bao giờ đăng vào kênh không có trong `channels.json`.**
-3. `pip install -r requirements.txt` nếu thiếu thư viện. Nhạc nền là nhạc tự tạo (`render/music.py`), không dùng nhạc có bản quyền.
+3. `pip install -r requirements.txt` nếu thiếu thư viện. Nhạc nền là nhạc tự tạo, không dùng nhạc có bản quyền: `autopost.run` tự xoay vòng 4 bản trong `render/tracks.py` (lofi, chill, house, tech). Không cần đặt trường `music`.
 
 ## 1. Chọn chủ đề
 
@@ -67,11 +67,11 @@ Theo `examples/bai-mau-kienthuc/`: `caption-facebook.txt` (tóm tắt ý, nguồ
 
 ## 4. Dựng và hẹn giờ
 
-Mỗi bài một thư mục `D/bai/<ngày>-<giờ>/` (ví dụ `D/bai/2026-11-05-1130/`), chứa `video.json` và 4 file chú thích.
+Mỗi bài một thư mục `D/bai/<ngày>-<giờ>/` (ví dụ `D/bai/2026-11-05-0900/`), chứa `video.json` và 4 file chú thích.
 
 ```
-python3 -m autopost.run D/bai/2026-11-05-1130 --at 2026-11-05T11:30:00+07:00
-python3 -m autopost.run D/bai/2026-11-05-2000 --at 2026-11-05T20:00:00+07:00
+python3 -m autopost.run D/bai/2026-11-05-0900 --at 2026-11-05T09:00:00+07:00
+python3 -m autopost.run D/bai/2026-11-05-1900 --at 2026-11-05T19:00:00+07:00
 ```
 
 Lệnh này tự tạo giọng Vbee (giọng clone Nguyễn Hoài Anh), dựng video, nén, đưa lên nhánh `media` để có URL công khai, rồi hẹn giờ trên cả 3 kênh. Trước khi hẹn giờ, xem vài khung hình của `video.mp4` (ffmpeg) để chắc chữ không tràn, không đè nhau. Muốn thử mà không đăng: `--dry-run` (chỉ dựng) hoặc `--draft` (lưu nháp trong Buffer).

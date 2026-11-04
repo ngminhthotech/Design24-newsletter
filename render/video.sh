@@ -10,6 +10,7 @@ mkdir -p "$(dirname "$out")"
 cd "$root/video"
 [ -d node_modules ] || npm ci --no-audit --no-fund >/dev/null
 [ -f public/music.wav ] || python3 "$root/render/music.py" public/ >/dev/null
+[ -f public/nhac-lofi.wav ] || python3 "$root/render/tracks.py" public/ >/dev/null
 comp="$(python3 -c 'import json,sys; print("Artboard" if "palettes" in json.load(open(sys.argv[1])) else "KienThuc")' "$json")"
 tmp="$(mktemp -d)"
 if [ "$voice" = "--voice" ]; then
