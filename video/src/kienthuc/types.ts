@@ -26,7 +26,7 @@ export type CompareScene = {
 export type ListScene = { type: "list"; kicker?: string; title: string; items: string[]; icon?: string; say: string };
 export type OutroScene = { type: "outro"; cta: string; sub?: string; say: string };
 
-export type KTScene = HookScene | RatioScene | PointScene | CompareScene | ListScene | OutroScene;
+export type KTScene = HookScene | RatioScene | PointScene | CompareScene | ListScene | OutroScene | HookPro | TransformScene | FocusScene | ExamplesScene | MistakeScene;
 
 export type Voice = { src: string; dur: number; text: string };
 
@@ -38,3 +38,11 @@ export type KienThucData = {
   scenes: KTScene[];
   voice?: Voice[];
 };
+
+// Cảnh "chuyên nghiệp" dùng bản thiết kế mẫu (video/src/kienthuc/mock.tsx)
+export type Palette = { bg: string; panel: string; ink: string; accent: string; card: string; deco: string };
+export type HookPro = { type: "hookpro"; title: string; stamp: string; sub?: string; bad: Palette; say: string };
+export type TransformScene = { type: "transform"; title: string; from: Palette; to: Palette; say: string };
+export type FocusScene = { type: "focus"; role: "bg" | "panel" | "accent"; pct: string; name: string; body: string; swatch: string; uses: string[]; palette: Palette; say: string };
+export type ExamplesScene = { type: "examples"; title: string; items: { kind: "poster" | "app" | "post"; label: string; palette: Palette }[]; say: string };
+export type MistakeScene = { type: "mistake"; title: string; bad: string; good: string; overuse: Palette; palette: Palette; say: string };

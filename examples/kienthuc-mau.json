@@ -1,86 +1,184 @@
 {
-  "series": "Mẹo thiết kế",
+  "series": "Mẹo phối màu",
   "topic": "Quy tắc 60-30-10",
   "date": "04/11/2026",
-  "sources": ["Interaction Design Foundation (Color Theory)", "Canva Design School"],
+  "sources": [
+    "Interaction Design Foundation (Color Theory)",
+    "Canva Design School"
+  ],
   "scenes": [
     {
-      "type": "hook",
-      "kicker": "MẸO PHỐI MÀU",
-      "title": "Quy tắc\n60-30-10",
-      "sub": "Phối màu sao cho sang mà không rối mắt?",
-      "say": "Vì sao có thiết kế nhìn rất sang, còn có thiết kế lại rối mắt? Bí quyết nằm ở quy tắc phối màu 60, 30, 10."
-    },
-    {
-      "type": "ratio",
-      "title": "Chia màu theo tỉ lệ",
-      "parts": [
-        {"pct": 60, "label": "Màu chủ đạo", "color": "#F4F1EA"},
-        {"pct": 30, "label": "Màu phụ", "color": "#0A2A8C"},
-        {"pct": 10, "label": "Màu nhấn", "color": "#FF7F14"}
-      ],
-      "say": "Quy tắc này chia màu theo tỉ lệ. 60 phần trăm cho màu chủ đạo, 30 phần trăm cho màu phụ, và 10 phần trăm cho màu nhấn."
-    },
-    {
-      "type": "point",
-      "num": "60%",
-      "icon": "layers",
-      "color": "#F4F1EA",
-      "title": "Màu chủ đạo làm nền",
-      "body": "Chọn màu trung tính hoặc nhạt, phủ phần lớn bố cục để mắt người xem được nghỉ.",
-      "examples": ["Nền trang", "Khoảng trắng", "Mảng lớn"],
-      "say": "Màu chủ đạo nên là màu trung tính hoặc nhạt, như trắng, xám hay be. Nó làm nền, để mắt người xem được nghỉ."
-    },
-    {
-      "type": "point",
-      "num": "30%",
-      "icon": "grid",
-      "color": "#0A2A8C",
-      "title": "Màu phụ tạo chiều sâu",
-      "body": "Dùng cho các khối lớn thứ hai. Hợp với màu chủ đạo, không tranh sáng với màu nhấn.",
-      "examples": ["Thanh menu", "Thẻ nội dung", "Chữ tiêu đề"],
-      "say": "Màu phụ dùng cho thanh menu, thẻ nội dung hay chữ tiêu đề. Nó tạo chiều sâu, nhưng không tranh sáng."
-    },
-    {
-      "type": "point",
-      "num": "10%",
-      "icon": "click",
-      "color": "#FF7F14",
-      "title": "Màu nhấn dẫn mắt",
-      "body": "Màu mạnh nhất, dùng thật ít, đặt đúng chỗ bạn muốn người xem nhìn vào hoặc bấm vào.",
-      "examples": ["Nút bấm", "Biểu tượng", "Điểm nhấn"],
-      "say": "Màu nhấn là màu mạnh nhất. Dùng thật ít, cho nút bấm hay điểm quan trọng, mắt người xem sẽ tự tìm đến."
-    },
-    {
-      "type": "compare",
-      "title": "Thử so sánh",
+      "type": "hookpro",
+      "title": "Thiết kế đủ đẹp\nmà vẫn *rối mắt*?",
+      "stamp": "RỐI MẮT",
+      "sub": "Lỗi nằm ở *tỉ lệ màu*",
       "bad": {
-        "label": "Màu ngang nhau",
-        "palette": {"bg": "#FFE14D", "panel": "#E53935", "text": "#1E88E5", "button": "#8E24AA", "extra": ["#43A047", "#00ACC1", "#F06292", "#43A047"]}
+        "bg": "#FFE14D",
+        "panel": "#E53935",
+        "ink": "#1E88E5",
+        "accent": "#8E24AA",
+        "card": "#00ACC1",
+        "deco": "#43A047"
       },
-      "good": {
-        "label": "Theo 60-30-10",
-        "palette": {"bg": "#F4F1EA", "panel": "#0A2A8C", "text": "#0A2A8C", "button": "#FF7F14"}
-      },
-      "say": "Bên trái, các màu dùng ngang nhau, mắt không biết nhìn vào đâu. Bên phải, đúng tỉ lệ, nút đăng ký nổi bật ngay."
+      "say": "Thiết kế có đủ hình, đủ chữ, mà nhìn vẫn rối mắt? Lỗi thường nằm ở tỉ lệ màu."
     },
     {
-      "type": "list",
-      "kicker": "GHI NHỚ",
-      "icon": "bookmark",
-      "title": "3 điều cần nhớ",
-      "items": [
-        "Màu nhạt làm nền, chiếm phần lớn",
-        "Màu phụ cho khối lớn, không tranh sáng",
-        "Màu nhấn dùng ít, đặt đúng điểm cần bấm"
+      "type": "transform",
+      "title": "Áp dụng quy tắc\n*60 - 30 - 10*",
+      "from": {
+        "bg": "#FFE14D",
+        "panel": "#E53935",
+        "ink": "#1E88E5",
+        "accent": "#8E24AA",
+        "card": "#00ACC1",
+        "deco": "#43A047"
+      },
+      "to": {
+        "bg": "#F4F1EA",
+        "panel": "#0A2A8C",
+        "ink": "#0A2A8C",
+        "accent": "#FF7F14",
+        "card": "#FFFFFF",
+        "deco": "#E4DCCB"
+      },
+      "say": "Áp dụng quy tắc 60, 30, 10. Cùng một bố cục, nhưng gọn và chuyên nghiệp hơn hẳn."
+    },
+    {
+      "type": "focus",
+      "role": "bg",
+      "pct": "60%",
+      "name": "Màu chủ đạo",
+      "body": "Nhạt, trung tính, phủ phần lớn bố cục.",
+      "swatch": "#F4F1EA",
+      "uses": [
+        "Nền trang",
+        "Khoảng trắng",
+        "Thẻ nội dung"
       ],
-      "say": "Tỉ lệ chỉ là điểm khởi đầu, không phải luật cứng. Hãy thử áp dụng cho thiết kế tiếp theo của bạn."
+      "palette": {
+        "bg": "#F4F1EA",
+        "panel": "#0A2A8C",
+        "ink": "#0A2A8C",
+        "accent": "#FF7F14",
+        "card": "#FFFFFF",
+        "deco": "#E4DCCB"
+      },
+      "say": "60 phần trăm là màu chủ đạo. Chọn màu nhạt, trung tính làm nền, để mắt người xem được nghỉ."
+    },
+    {
+      "type": "focus",
+      "role": "panel",
+      "pct": "30%",
+      "name": "Màu phụ",
+      "body": "Tạo chiều sâu, hợp với nền, không tranh sáng.",
+      "swatch": "#0A2A8C",
+      "uses": [
+        "Thanh menu",
+        "Tiêu đề",
+        "Khối hình lớn"
+      ],
+      "palette": {
+        "bg": "#F4F1EA",
+        "panel": "#0A2A8C",
+        "ink": "#0A2A8C",
+        "accent": "#FF7F14",
+        "card": "#FFFFFF",
+        "deco": "#E4DCCB"
+      },
+      "say": "30 phần trăm là màu phụ, cho thanh menu, tiêu đề và khối hình lớn. Nó tạo chiều sâu cho bố cục."
+    },
+    {
+      "type": "focus",
+      "role": "accent",
+      "pct": "10%",
+      "name": "Màu nhấn",
+      "body": "Mạnh nhất, dùng ít, đặt đúng chỗ cần bấm.",
+      "swatch": "#FF7F14",
+      "uses": [
+        "Nút bấm",
+        "Biểu tượng"
+      ],
+      "palette": {
+        "bg": "#F4F1EA",
+        "panel": "#0A2A8C",
+        "ink": "#0A2A8C",
+        "accent": "#FF7F14",
+        "card": "#FFFFFF",
+        "deco": "#E4DCCB"
+      },
+      "say": "Và 10 phần trăm là màu nhấn. Màu mạnh nhất, chỉ dành cho nút bấm, nơi bạn muốn người xem hành động."
+    },
+    {
+      "type": "mistake",
+      "title": "Lỗi hay gặp:\n*lạm dụng màu nhấn*",
+      "bad": "Cam ở khắp nơi",
+      "good": "Chỉ ở nút bấm",
+      "overuse": {
+        "bg": "#FFF1E4",
+        "panel": "#FF7F14",
+        "ink": "#FF7F14",
+        "accent": "#FF7F14",
+        "card": "#FFFFFF",
+        "deco": "#FFB46B"
+      },
+      "palette": {
+        "bg": "#F4F1EA",
+        "panel": "#0A2A8C",
+        "ink": "#0A2A8C",
+        "accent": "#FF7F14",
+        "card": "#FFFFFF",
+        "deco": "#E4DCCB"
+      },
+      "say": "Lỗi hay gặp nhất là dùng màu nhấn khắp nơi. Khi chỗ nào cũng nổi, thì không còn chỗ nào nổi bật."
+    },
+    {
+      "type": "examples",
+      "title": "Dùng được cho\n*mọi sản phẩm*",
+      "items": [
+        {
+          "kind": "poster",
+          "label": "Poster",
+          "palette": {
+            "bg": "#12172F",
+            "panel": "#3B4A9C",
+            "ink": "#FFFFFF",
+            "accent": "#FFB703",
+            "card": "#FFFFFF",
+            "deco": "#3B4A9C"
+          }
+        },
+        {
+          "kind": "app",
+          "label": "Ứng dụng",
+          "palette": {
+            "bg": "#F5F7F6",
+            "panel": "#1F7A5A",
+            "ink": "#1E2A26",
+            "accent": "#FF6B57",
+            "card": "#FFFFFF",
+            "deco": "#D4ECE2"
+          }
+        },
+        {
+          "kind": "post",
+          "label": "Bài đăng",
+          "palette": {
+            "bg": "#FFF6E9",
+            "panel": "#2B2D42",
+            "ink": "#2B2D42",
+            "accent": "#E63946",
+            "card": "#FFFFFF",
+            "deco": "#E9DCC8"
+          }
+        }
+      ],
+      "say": "Quy tắc này dùng được cho poster, giao diện ứng dụng, hay bài đăng mạng xã hội."
     },
     {
       "type": "outro",
-      "cta": "Theo dõi Design24",
+      "cta": "Lưu lại để dùng nhé!",
       "sub": "Mỗi ngày một mẹo thiết kế",
-      "say": "Theo dõi Design24, để học thêm một mẹo thiết kế mỗi ngày nhé!"
+      "say": "Lưu video này lại, và theo dõi Design24 để học thêm một mẹo thiết kế mỗi ngày nhé!"
     }
   ]
 }

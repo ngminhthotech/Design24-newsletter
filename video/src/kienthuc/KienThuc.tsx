@@ -9,6 +9,7 @@ import { fade } from "@remotion/transitions/fade";
 import { C } from "../brand";
 import { Subtitles } from "./Subtitles";
 import { Compare, Hook, List, Outro, Point, Ratio } from "./scenes";
+import { ExamplesSceneC, FocusSceneC, HookProScene, MistakeSceneC, TransformSceneC } from "./scenes2";
 import type { KienThucData, KTScene } from "./types";
 
 export const FPS = 30;
@@ -23,7 +24,7 @@ const lines = (d: KienThucData) =>
     return v ? { text: v.text, dur: v.dur, src: v.src as string | undefined } : { text: s.say, dur: Math.max(2.2, s.say.length / CHARS_PER_SEC), src: undefined };
   });
 
-const MIN: Record<KTScene["type"], number> = { hook: 100, ratio: 150, point: 130, compare: 170, list: 150, outro: 120 };
+const MIN: Record<KTScene["type"], number> = { hook: 100, ratio: 150, point: 130, compare: 170, list: 150, outro: 120, hookpro: 90, transform: 120, focus: 120, examples: 130, mistake: 150 };
 
 const durations = (d: KienThucData) => lines(d).map((l, i) => Math.max(MIN[d.scenes[i].type], VOICE_DELAY + Math.ceil(l.dur * FPS) + T + 14));
 
@@ -46,6 +47,11 @@ const render = (s: KTScene, d: KienThucData) => {
     case "compare": return <Compare s={s} series={d.series} />;
     case "list": return <List s={s} series={d.series} />;
     case "outro": return <Outro s={s} sources={d.sources} />;
+    case "hookpro": return <HookProScene s={s} />;
+    case "transform": return <TransformSceneC s={s} series={d.series} />;
+    case "focus": return <FocusSceneC s={s} series={d.series} />;
+    case "examples": return <ExamplesSceneC s={s} series={d.series} />;
+    case "mistake": return <MistakeSceneC s={s} series={d.series} />;
   }
 };
 
