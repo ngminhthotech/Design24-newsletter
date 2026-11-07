@@ -64,7 +64,9 @@ PRON = json.loads((ROOT / "assets" / "phat-am.json").read_text(encoding="utf-8")
 
 def _sub_words(text, table):
     for k in sorted(table, key=len, reverse=True):
-        text = re.sub(r"(?<![\w.])" + re.escape(k) + r"(?![\w])", table[k], text, flags=re.I)
+        # Viết tắt in hoa (AI, UI, HCM) chỉ khớp đúng chữ hoa, để "không ai" không bị đọc thành "ây ai".
+        flags = 0 if k.isupper() else re.I
+        text = re.sub(r"(?<![\w.])" + re.escape(k) + r"(?![\w])", table[k], text, flags=flags)
     return text
 
 
