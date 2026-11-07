@@ -1,0 +1,25 @@
+{
+  "series": "Mẹo phối màu",
+  "topic": "Quy tắc 60-30-10",
+  "date": "04/11/2026",
+  "sources": ["Interaction Design Foundation (Color Theory)", "Canva Design School"],
+  "palettes": {
+    "bad": { "bg": "#FFE14D", "panel": "#E53935", "ink": "#1E88E5", "accent": "#8E24AA", "card": "#00ACC1", "deco": "#43A047" },
+    "good": { "bg": "#F4F1EA", "panel": "#0A2A8C", "ink": "#0A2A8C", "accent": "#FF7F14", "card": "#F4F1EA", "deco": "#2747B5" },
+    "overuse": { "bg": "#FFF1E4", "panel": "#FF7F14", "ink": "#FF7F14", "accent": "#FF7F14", "card": "#FFFFFF", "deco": "#FFA64D" }
+  },
+  "scenes": [
+    { "type": "cover", "say": "Bạn đã phối màu theo quy tắc 60, 30, 10 đúng cách chưa?" },
+    { "type": "bad", "say": "Nhìn thiết kế này nhé. Màu nào cũng mạnh, nên mắt người xem không biết nhìn vào đâu." },
+    { "type": "pick", "role": "bg", "pct": "60%", "name": "Màu chủ đạo", "note": "nền, khoảng trống", "say": "Đầu tiên, chọn một màu nhạt và trung tính làm màu chủ đạo. Nó phủ khoảng 60% thiết kế." },
+    { "type": "pick", "role": "panel", "pct": "30%", "name": "Màu phụ", "note": "khối lớn, tiêu đề", "say": "Tiếp theo là màu phụ, khoảng 30%, dùng cho khối hình lớn và tiêu đề." },
+    { "type": "pick", "role": "accent", "pct": "10%", "name": "Màu nhấn", "note": "nút bấm, điểm nhấn", "say": "Cuối cùng là màu nhấn, chỉ 10%. Dành riêng cho nút bấm và chi tiết cần chú ý." },
+    { "type": "compare", "say": "Cùng một bố cục, nhưng giờ nhìn gọn gàng và chuyên nghiệp hơn hẳn." },
+    { "type": "flow", "say": "Mắt người xem đi đúng thứ tự: đọc tiêu đề, xem nội dung, rồi dừng ở nút đăng ký." },
+    { "type": "ratio", "say": "Tóm lại: 60% màu chủ đạo, 30% màu phụ, và 10% màu nhấn." },
+    { "type": "mistake", "say": "Lỗi hay gặp là dùng màu nhấn ở khắp nơi. Khi chỗ nào cũng nổi, thì không còn chỗ nào nổi bật." },
+    { "type": "wheel", "say": "Mẹo nhỏ: chọn màu nhấn nằm đối diện màu phụ trên vòng màu, để nút bấm nổi bật nhất." },
+    { "type": "examples", "say": "Quy tắc này dùng được cho poster, giao diện ứng dụng, hay bài đăng mạng xã hội." },
+    { "type": "outro", "say": "Lưu video này lại, và theo dõi Design24 để học thêm một mẹo thiết kế mỗi ngày nhé!" }
+  ]
+}

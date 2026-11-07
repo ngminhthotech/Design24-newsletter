@@ -1,0 +1,38 @@
+{
+  "series": "Mẹo bố cục",
+  "topic": "Khoảng trắng trong thiết kế",
+  "date": "05/11/2026",
+  "sources": ["Interaction Design Foundation (White Space)", "Nielsen Norman Group"],
+  "palettes": {
+    "good": { "bg": "#F4F1EA", "panel": "#0A2A8C", "ink": "#0A2A8C", "accent": "#FF7F14", "card": "#F4F1EA", "deco": "#2747B5" }
+  },
+  "scenes": [
+    { "type": "cover", "pre": "BẠN ĐÃ DÙNG", "word": "KHOẢNG TRẮNG", "post": "đúng cách chưa?", "say": "Thiết kế của bạn chật chội, khó đọc? Có thể bạn đang sợ khoảng trắng." },
+    { "type": "fix", "num": "01", "title": "Giãn khoảng cách", "sub": "cho nội dung thở", "focus": "body",
+      "from": { "gap": 0.62, "pad": 24, "noise": 1, "lead": 0.82, "track": -4 }, "to": { "gap": 1, "pad": 56, "noise": 1, "lead": 0.82, "track": -4 },
+      "prop": { "name": "Khoảng cách khối", "from": "8 px", "to": "32 px" },
+      "say": "Đầu tiên, tăng khoảng cách giữa các khối nội dung. Mỗi nhóm thông tin cần có chỗ để thở." },
+    { "type": "fix", "num": "02", "title": "Bỏ chi tiết thừa", "sub": "ít mà chất", "focus": "all",
+      "from": { "noise": 1, "lead": 0.82, "track": -4 }, "to": { "noise": 0, "lead": 0.82, "track": -4 },
+      "prop": { "name": "Phần tử trang trí", "from": "5 phần tử", "to": "0" },
+      "say": "Tiếp theo, bỏ bớt chi tiết trang trí thừa. Ít phần tử hơn, người xem tập trung hơn." },
+    { "type": "fix", "num": "03", "title": "Giãn dòng tiêu đề", "sub": "chữ không dính nhau", "focus": "top",
+      "from": { "lead": 0.82, "track": -4 }, "to": { "lead": 1.0, "track": -1 },
+      "prop": { "name": "Giãn dòng", "from": "80%", "to": "100%" },
+      "say": "Với tiêu đề lớn, chỉnh giãn dòng và giãn chữ vừa đủ, để các dòng chữ không dính vào nhau." },
+    { "type": "versus", "sub": "cùng một nội dung",
+      "from": { "gap": 0.62, "pad": 24, "noise": 1, "lead": 0.82, "track": -4 }, "to": {},
+      "say": "Cùng nội dung, nhưng bản sau nhìn sang và dễ đọc hơn hẳn." },
+    { "type": "point", "title": "Ghi nhớ", "sub": "khoảng trắng dẫn mắt", "icon": "eye", "big": "ÍT MÀ CHẤT",
+      "body": "Khoảng trắng không phải chỗ bị bỏ phí. Nó dẫn mắt người xem tới điều quan trọng.",
+      "say": "Nhớ nhé: khoảng trắng không phải chỗ bị bỏ phí, nó dẫn mắt người xem tới điều quan trọng." },
+    { "type": "dodont", "title": "Nên và không nên", "sub": "chừa lề cho thiết kế",
+      "bad": { "label": "Lấp kín mọi chỗ trống", "style": { "gap": 0.62, "pad": 24, "noise": 1 } },
+      "good": { "label": "Chừa lề và khoảng cách đều", "style": {} },
+      "say": "Đừng cố lấp kín mọi chỗ trống. Hãy chừa lề rộng và khoảng cách đều nhau." },
+    { "type": "list", "title": "3 mẹo nhanh", "sub": "áp dụng ngay",
+      "items": ["Lề ít nhất 5% chiều rộng", "Khoảng cách theo bội số 8 px", "Đặt gần nhau những gì liên quan"],
+      "say": "Ba mẹo nhanh: chừa lề ít nhất 5% chiều rộng, dùng khoảng cách theo bội số 8, và đặt gần nhau những gì liên quan." },
+    { "type": "outro", "say": "Lưu video này lại, và theo dõi Design24 để học thêm một mẹo thiết kế mỗi ngày nhé!" }
+  ]
+}
