@@ -379,7 +379,8 @@ export const Swatches: React.FC<SceneProps<SwatchScene>> = ({ s, vd, accent }) =
 export const Stat: React.FC<SceneProps<StatScene>> = ({ s, vd, accent }) => {
   const frame = useCurrentFrame();
   const light = isLight(s.bg ?? "ink");
-  const m = s.value.match(/^([\d.,]+)(.*)$/);
+  const m0 = s.value.match(/^([\d.,]+)(.*)$/);
+  const m = m0 && !/\d/.test(m0[2]) ? m0 : null;
   const target = m ? parseFloat(m[1].replace(",", ".")) : 0;
   const dec = m && /[.,]/.test(m[1]) ? 1 : 0;
   const cnt = interpolate(frame, [6, 34], [0, target], { ...clamp, easing: outExpo });

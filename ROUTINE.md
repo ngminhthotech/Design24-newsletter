@@ -20,46 +20,88 @@ Thư mục làm việc `D`: `/mnt/project-files/design24-auto-post/` nếu có. 
 - Lấy 2 chủ đề trong `assets/chu-de.md` theo đúng khung giờ, chưa có trong `D/da-dang.md` trong 45 ngày gần nhất.
 - Tìm 2 đến 3 nguồn uy tín (Interaction Design Foundation, Nielsen Norman Group, Canva Design School, Smashing Magazine, Material Design, Adobe...). Viết lại bằng lời của mình, không chép nguyên văn. Ghi tên nguồn vào `sources`.
 
-## 2. Viết kịch bản `video.json`
+## 2. Viết kịch bản `video.json` (mẫu Studio)
 
-Theo mẫu `examples/artboard-khoang-trang.json` (chủ đề chung) hoặc `examples/artboard-60-30-10.json` (riêng phối màu). Phong cách: một tấm thẻ giấy ở giữa, poster "Khóa học thiết kế đồ họa" được **sửa trực tiếp** trước mắt người xem.
+Người dùng không muốn video đóng khuôn. Mỗi video phải có cách kể, hình ảnh và nhịp riêng, như một người làm nội dung giỏi thật sự hiểu người xem. `examples/studio-tuong-phan.json` chỉ là **một** ví dụ về cú pháp, không phải khuôn để chép thứ tự cảnh.
 
-- 7 đến 10 cảnh. Mỗi cảnh có `say` là lời đọc 50 đến 100 ký tự (4 đến 7 giây), câu ngắn, nói như người thật, xưng "bạn".
-- Cảnh đầu luôn là `cover` (câu hỏi gây tò mò: `pre` + `word` + `post`, ví dụ "BẠN ĐÃ DÙNG / KHOẢNG TRẮNG / đúng cách chưa?"). Cảnh cuối luôn là `outro` với lời kêu gọi lưu video và theo dõi Design24.
-- Có ít nhất 2 cảnh `fix` (sửa trực tiếp) và 1 cảnh `versus` hoặc `dodont`, để video có hình ảnh trực quan, không chỉ chữ.
+### 2.1 Hiểu người xem trước khi viết
 
-Các loại cảnh:
+Người xem là người mới học thiết kế, sinh viên, chủ shop nhỏ tự làm bài đăng. Họ lướt nhanh trên điện thoại, quyết định ở lại hay lướt đi trong 1 đến 2 giây đầu.
 
-| type | Dùng khi | Trường chính |
+- **Câu mở đầu đánh vào thứ họ đang gặp**, không chào hỏi, không giới thiệu bản thân. Xoay vòng các kiểu mở đầu, không dùng cùng một kiểu 2 bài liền nhau:
+  - chỉ ra lỗi họ đang mắc ("Poster của bạn khó đọc vì một lý do"),
+  - câu hỏi đố ("Thiết kế nào trông đắt tiền hơn?"),
+  - hiểu lầm phổ biến ("Nhiều màu chưa chắc đã nổi bật"),
+  - cho xem kết quả trước ("Từ bài đăng này thành bài đăng này chỉ bằng 1 thay đổi"),
+  - con số hứa hẹn ("3 lỗi khiến slide trông nghiệp dư").
+- **Mở một vòng tò mò và chỉ đóng nó ở gần cuối** (hứa "lỗi thứ 3 ít ai để ý", "đáp án ở cuối video").
+- **Đổi hình ảnh mỗi 3 đến 5 giây**: đổi loại cảnh, nền, cỡ khung, hoặc có chuyển động mới (khoanh, phóng to, sửa). Không để một khung hình đứng yên quá một câu.
+- **Ví dụ gần gũi với đời sống Việt Nam**: menu quán, bài đăng bán hàng Facebook/Shopee, poster sự kiện ở trường, slide thuyết trình, danh thiếp, ảnh bìa YouTube. Tự viết chữ trên mẫu (tên quán, sản phẩm, giá bằng đồng) cho khớp câu chuyện của bài, không dùng chữ mặc định.
+- **Lời đọc như nói chuyện**: câu ngắn, xưng "bạn", một ý mỗi cảnh, có con số cụ thể, tránh giọng sách giáo khoa và câu thừa.
+- **Kết bằng một điều làm được ngay** rồi mới kêu gọi. Đổi cách kêu gọi giữa các bài: lưu lại, bình luận chọn A hay B, gửi cho bạn đang học thiết kế, theo dõi Design24.
+
+### 2.2 Chọn dạng video theo chủ đề
+
+Chọn dạng hợp chủ đề nhất, và khác dạng của bài đăng ngay trước đó (xem cột "Dạng" trong `da-dang.md`):
+
+| Dạng | Cách kể | Cảnh hay dùng |
 | --- | --- | --- |
-| `cover` | Mở đầu | `pre`, `word` (từ khoá, ngắn), `post` |
-| `fix` | Sửa một thuộc tính, poster biến đổi | `num`, `title`, `sub`, `from`, `to` (kiểu poster), `prop` {`name`, `from`, `to`}, `focus` (`top`/`body`/`button`/`all`) |
-| `versus` | So sánh trước/sau có thanh trượt | `from`, `to`, `sub` |
-| `dodont` | Nên / không nên, 2 poster nhỏ | `title`, `bad` {`label`, `style`}, `good` {`label`, `style`} |
-| `point` | Ý chính cần nhớ | `title`, `big` (2 đến 4 chữ), `body`, `icon`, `bullets` (tối đa 3) |
-| `list` | 3 đến 5 mẹo nhanh | `title`, `items` (mỗi ý dưới 34 ký tự) |
-| `bad`, `pick`, `compare`, `flow`, `ratio`, `mistake`, `wheel`, `examples` | Chỉ cho chủ đề phối màu | xem `examples/artboard-60-30-10.json` |
-| `outro` | Kết | chỉ `say` |
+| Sửa thiết kế thật | 1 mẫu xấu được sửa từng bước tới đẹp | `hook`, nhiều `show` nối nhau trên cùng mẫu, `gallery` |
+| Đố vui | 2 đến 3 vòng A hay B, giải thích sau mỗi vòng | `quiz`, `big`, `show` |
+| Hiểu lầm và sự thật | Nêu niềm tin sai, lật lại bằng ví dụ | `big`, `split`, `stat` |
+| Top lỗi | 3 lỗi, mỗi lỗi một cảnh sai/đúng, lỗi cuối bất ngờ nhất | `split`, `show`, `tips` |
+| Quy tắc và con số | Một quy tắc có số đo, minh họa bằng mẫu | `stat`, `swatches`, `show` |
+| Trước và sau nhanh | Nhiều mẫu khác nhau, mỗi mẫu một thay đổi | `gallery`, `split`, `show` |
 
-Kiểu poster (`from`, `to`, `style`) gồm các núm chỉnh, bỏ trống là giá trị chuẩn (đẹp):
+### 2.3 Luật đa dạng (bắt buộc)
 
-| Núm | Ý nghĩa | Giá trị "sai" gợi ý |
+- 8 đến 12 cảnh, tổng 45 đến 70 giây; mỗi `say` 40 đến 100 ký tự.
+- Mỗi video dùng ít nhất 4 loại cảnh khác nhau; không loại nào quá 3 lần; 2 cảnh liền nhau không cùng loại và cùng nền.
+- Ít nhất 3 loại mẫu thiết kế (`kind`) khác nhau trong một video. Loại mẫu chính không trùng bài đăng trước.
+- Mỗi ảnh chỉ dùng 1 lần trong video (trừ trước/sau của cùng một mẫu). Ảnh tự động không lặp giữa các bài nhờ nhật ký `anh-da-dung.tsv`. Từ khóa ảnh viết bằng tiếng Anh, cụ thể, khớp nội dung ("bubble tea shop", "wedding invitation flowers"). Sau khi dựng, xem ảnh trong `video/public/photos/`: có logo hãng, chữ, hình mờ, tranh cổ hay nội dung không phù hợp thì đổi từ khóa hoặc thêm `#1`, `#2` để lấy ảnh khác.
+- Đổi bảng màu mẫu (`pal`) theo câu chuyện của bài, không giữ màu mặc định mãi.
+- Không bắt đầu 2 bài liền nhau bằng cùng một loại cảnh.
+
+### 2.4 Cú pháp
+
+Gốc JSON: `"template": "studio"`, `series` ("Mẹo thiết kế" hoặc "Chữ và thương hiệu"), `topic`, `date`, `sources`, `scenes`. Ảnh viết `"photo:<từ khóa tiếng Anh>"` (thêm `#n` để lấy ảnh thứ n), được tải tự động (ảnh CC0, Openverse). Trong chữ tiêu đề, `*từ khóa*` được tô nền vàng. Mọi cảnh có `say` và có thể có `bg`: `dark`, `ink`, `blue`, `paper`, `photo` (ảnh mờ, cần `photo`) hoặc mã màu.
+
+| type | Dùng khi | Trường |
 | --- | --- | --- |
-| `palette` | tên bảng màu trong `palettes` (cần có `good`) hoặc bảng màu đầy đủ | bảng màu chói, tương phản thấp |
-| `font` | `oswald` (chuẩn), `sans`, `serif`, `mixed` (lộn xộn nhiều phông) | `mixed` |
-| `align` | `left` hoặc `center` | |
-| `gap` | khoảng cách dọc nội dung (1 chuẩn) | 0.6 |
-| `pad` | lề trái px (56 chuẩn) | 20 |
-| `head`, `body` | hệ số cỡ chữ tiêu đề / nội dung | tiêu đề 0.55 với nội dung 1.4 (sai phân cấp) |
-| `track`, `lead` | giãn chữ (px), giãn dòng tiêu đề | -4, 0.82 |
-| `mis` | 0..1, mức lệch lề | 1 |
-| `grid` | 0..1, hiện lưới cột | 1 khi giảng về lưới |
-| `noise` | 0..1, chi tiết trang trí thừa | 1 |
-| `text` | đổi chữ trên poster: `kicker`, `title` (xuống dòng bằng `\n`), `sub`, `items`, `button`, `tag`, `tagBig` | |
+| `hook` | Mở đầu bằng ảnh tràn màn hình, chữ động | `photo`, `kicker`, `lines` (2 đến 4 dòng, mỗi dòng dưới 12 ký tự) |
+| `big` | Câu chốt, lật vấn đề, mở đầu không ảnh | `lines`, `sub`, `icon` |
+| `show` | Sửa trực tiếp một mẫu | `title`, `spec`, `from`, `to` (núm), `at` (0..1 lúc sửa), `notes` [{`x`,`y`,`w`,`h`,`text`,`at`,`side`}], `meter` (["ink","bg"] hoặc ["accentInk","accent"] để hiện độ tương phản), `labels` [trước, sau], `zoom` {`x`,`y`,`z`} |
+| `split` | Sai và đúng cạnh nhau | `title`, `spec`, `bad`, `good` (núm), `badLabel`, `goodLabel` |
+| `quiz` | Đố A hay B, đếm ngược 3-2-1 | `question`, `spec`, `a`, `b`, `answer` |
+| `stat` | Một con số cần nhớ | `kicker`, `value` ("4,5:1", "60%"), `label`, `items` [{`value`,`label`}] |
+| `swatches` | Các cặp màu chữ/nền, tự tính tỷ lệ tương phản | `title`, `rows` [{`bg`,`ink`,`label`}], `min` |
+| `tips` | 2 đến 4 mẹo nhanh | `title`, `items` (mỗi ý dưới 40 ký tự), `photo` (nền mờ) |
+| `gallery` | Loạt mẫu đẹp cắt nhanh | `title`, `specs` (2 đến 4 mẫu) |
+| `cta` | Kết | chỉ `say` |
+
+Mẫu thiết kế `spec`: `kind`, `photo`, `pal` {`bg`,`ink`,`sub`,`accent`,`accentInk`}, `text` (đổi chữ trên mẫu), và các núm.
+
+| kind | Là gì | Chữ đổi được (`text`) |
+| --- | --- | --- |
+| `event` | Poster sự kiện, ảnh nền toàn khung | `kicker`, `title` (`\n` xuống dòng), `sub`, `button` |
+| `cafe` | Bài đăng vuông của quán | `brand`, `title`, `sub`, `button` |
+| `sale` | Bài bán hàng có giá | `tag`, `title`, `sub`, `price`, `old`, `button` |
+| `app` | Màn hình ứng dụng trong điện thoại | `hello`, `title`, `sub`, `button` |
+| `landing` | Trang web trong laptop | `logo`, `title`, `sub`, `button` |
+| `thumb` | Ảnh bìa YouTube | `title` (dòng đầu màu nhấn) |
+| `slide` | Slide thuyết trình | `kicker`, `title`, `sub`, `items` (ngăn bằng `\|`), `page` |
+| `card` | Danh thiếp | `name`, `role`, `phone`, `mail`, `logo` |
+| `story` | Story/menu dọc | `kicker`, `title`, `sub`, `price`, `button` |
+
+Núm (dùng trong `from`, `to`, `bad`, `good`, `a`, `b`, hoặc thẳng trong `spec`): `pal` (màu), `overlay` (0..1 lớp phủ tối trên ảnh), `font` (`head`, `sans`, `serif`, `mixed` là lộn xộn), `align` (`left`, `center`), `head`, `body` (hệ số cỡ chữ), `gap` (khoảng cách, 1 chuẩn), `pad` (lề), `mis` (0..1 lệch lề), `noise` (0..1 chi tiết thừa), `btn` (cỡ nút).
 
 Biểu tượng (`icon`): book, bookmark, brush, check, eye, heart, layers, grid, bulb, megaphone, monitor, click, palette, pen, pipette, search, send, sparkles, type, follow.
 
 Kiểm tra lời đọc: `python3 render/voice.py <thư mục>/video.json --dry-run`. Từ tiếng Anh hay viết tắt đọc sai thì thêm vào `assets/phat-am.json`.
+
+Kiểm tra hình trước khi hẹn giờ: dựng bằng `--dry-run`, rồi cắt 24 khung hình đều nhau thành một ảnh lưới và xem kỹ: chữ không tràn, không đè nhau, vòng khoanh đúng chỗ, ảnh hợp nội dung, không có 2 khung liền nhau trông giống hệt. Có lỗi thì sửa `video.json` và dựng lại với `--rerender --dry-run` trước khi hẹn giờ.
+
+Mẫu cũ (Artboard, `examples/artboard-*.json`) vẫn chạy được nhưng không dùng cho bài mới.
 
 ## 3. Chú thích
 
@@ -67,7 +109,7 @@ Theo `examples/bai-mau-kienthuc/`: `caption-facebook.txt` (tóm tắt ý, nguồ
 
 ## 4. Dựng và hẹn giờ
 
-Mỗi bài một thư mục `D/bai/<ngày>-<giờ>/` (ví dụ `D/bai/2026-11-05-0900/`), chứa `video.json` và 4 file chú thích.
+Mỗi bài một thư mục `D/bai/<ngày>-<giờ>/` (bắt buộc đúng tên này: nhật ký ảnh `D/anh-da-dung.tsv` dựa vào nó) (ví dụ `D/bai/2026-11-05-0900/`), chứa `video.json` và 4 file chú thích.
 
 ```
 python3 -m autopost.run D/bai/2026-11-05-0900 --at 2026-11-05T09:00:00+07:00
@@ -78,6 +120,6 @@ Lệnh này tự tạo giọng Vbee (giọng clone Nguyễn Hoài Anh), dựng v
 
 ## 5. Ghi lại
 
-- Thêm vào `D/da-dang.md` một dòng: ngày, giờ, chủ đề.
+- Thêm vào `D/da-dang.md` một dòng: ngày, giờ, chủ đề, dạng video, kiểu mở đầu, loại mẫu chính (để bài sau chọn khác).
 - Báo cáo `D/bao-cao/<ngày>.md`: 2 chủ đề, nguồn, đường dẫn video, id bài Buffer từng kênh, lỗi nếu có. Kênh lỗi thì thử lại tối đa 2 lần rồi ghi lỗi, không đăng trùng.
 - Mỗi tuần một lần (thứ Hai) chạy `python3 -m autopost.insights` nếu có, ghi lượt xem để chọn chủ đề tốt hơn.

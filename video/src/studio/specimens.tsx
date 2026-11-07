@@ -6,7 +6,7 @@ import { BODY, HEAD, SERIF } from "../artboard/fonts";
 // màn hình ứng dụng, trang web, ảnh bìa YouTube. Mỗi mẫu có ảnh thật (CC0) và các "núm chỉnh" để
 // biến từ bản sai sang bản đúng (màu, lớp phủ ảnh, phông, cỡ chữ, lệch lề, chi tiết thừa...).
 
-export type Kind = "event" | "cafe" | "sale" | "app" | "landing" | "thumb";
+export type Kind = "event" | "cafe" | "sale" | "app" | "landing" | "thumb" | "slide" | "card" | "story";
 export type Pal = { bg: string; ink: string; sub: string; accent: string; accentInk: string };
 export type Knobs = {
   pal?: Partial<Pal>;
@@ -20,6 +20,7 @@ export type Knobs = {
   mis?: number; // 0..1 lệch lề
   noise?: number; // 0..1 chi tiết thừa
   btn?: number; // hệ số cỡ nút
+  track?: number; // giãn chữ tiêu đề (px)
 };
 export type Spec = { kind: Kind; photo?: string; pal?: Partial<Pal>; text?: Record<string, string> } & Knobs;
 
@@ -30,6 +31,9 @@ export const SIZE: Record<Kind, [number, number]> = {
   app: [430, 880],
   landing: [1280, 800],
   thumb: [1280, 720],
+  slide: [1280, 720],
+  card: [1050, 600],
+  story: [720, 1280],
 };
 
 const DEF_PAL: Record<Kind, Pal> = {
@@ -39,6 +43,9 @@ const DEF_PAL: Record<Kind, Pal> = {
   app: { bg: "#FFFFFF", ink: "#14182B", sub: "#6B7088", accent: "#3D5AFE", accentInk: "#FFFFFF" },
   landing: { bg: "#F7F7F2", ink: "#111827", sub: "#4B5563", accent: "#FF6B2C", accentInk: "#FFFFFF" },
   thumb: { bg: "#0E0E10", ink: "#FFFFFF", sub: "#FFE500", accent: "#FFE500", accentInk: "#111111" },
+  slide: { bg: "#FFFFFF", ink: "#14213D", sub: "#5C677D", accent: "#FCA311", accentInk: "#14213D" },
+  card: { bg: "#1F2A44", ink: "#FFFFFF", sub: "#B8C1D9", accent: "#E9B949", accentInk: "#1F2A44" },
+  story: { bg: "#FFF4E6", ink: "#2B1B12", sub: "#7A5C48", accent: "#E85D04", accentInk: "#FFFFFF" },
 };
 
 const DEF_TEXT: Record<Kind, Record<string, string>> = {
@@ -48,6 +55,9 @@ const DEF_TEXT: Record<Kind, Record<string, string>> = {
   app: { hello: "Chào buổi sáng, An", title: "Lớp vẽ cuối tuần", sub: "8 buổi · Cơ bản đến nâng cao", button: "Đăng ký học thử" },
   landing: { logo: "nova.", title: "Làm việc gọn hơn,\nmỗi ngày.", sub: "Một nơi cho lịch, ghi chú và việc cần làm của cả nhóm.", button: "Dùng thử miễn phí" },
   thumb: { title: "5 LỖI\nAI CŨNG MẮC", tag: "MỚI" },
+  slide: { kicker: "QUÝ 3 · 2026", title: "Doanh thu tăng 32%", sub: "Nhờ kênh bán hàng trực tuyến mới", items: "Khách mới tăng gấp đôi|Đơn trung bình 450.000đ|Tỷ lệ quay lại 41%", page: "07" },
+  card: { name: "Nguyễn Minh Anh", role: "Nhà thiết kế thương hiệu", phone: "0901 234 567", mail: "minhanh@studio.vn", logo: "MA" },
+  story: { kicker: "THỰC ĐƠN HÔM NAY", title: "Bún chả\nHà Nội", sub: "Chả nướng than hoa, nước chấm chua ngọt", price: "45K", button: "Đặt món" },
 };
 
 const lerp = (a: number | undefined, b: number | undefined, d: number, t: number) => interpolate(t, [0, 1], [a ?? d, b ?? d]);
@@ -59,7 +69,7 @@ export const blend = (base: Spec, from: Knobs = {}, to: Knobs = {}, t: number): 
   const pal = Object.fromEntries(
     (Object.keys(dp) as (keyof Pal)[]).map((k) => [k, lerpColor(from.pal?.[k] ?? dp[k], to.pal?.[k] ?? dp[k], dp[k], t)]),
   ) as Pal;
-  const num = (k: "overlay" | "head" | "body" | "gap" | "pad" | "mis" | "noise" | "btn", d: number) => lerp(from[k] ?? base[k], to[k] ?? base[k], d, t);
+  const num = (k: "overlay" | "head" | "body" | "gap" | "pad" | "mis" | "noise" | "btn" | "track", d: number) => lerp(from[k] ?? base[k], to[k] ?? base[k], d, t);
   return {
     ...base,
     pal,
@@ -71,6 +81,7 @@ export const blend = (base: Spec, from: Knobs = {}, to: Knobs = {}, t: number): 
     mis: num("mis", 0),
     noise: num("noise", 0),
     btn: num("btn", 1),
+    track: num("track", 0),
     font: (t < 0.5 ? from.font : to.font) ?? base.font ?? "head",
     align: (t < 0.5 ? from.align : to.align) ?? base.align,
   };
@@ -136,7 +147,7 @@ const Event: React.FC<{ s: Spec; p: Pal; t: Record<string, string> }> = ({ s, p,
       <div style={{ position: "absolute", inset: 0, background: `linear-gradient(180deg, rgba(0,0,0,0) 20%, ${p.bg} 92%)`, opacity: s.overlay }} />
       <div style={{ position: "absolute", left: pad, right: pad, bottom: 64 * g, textAlign: s.align ?? "left", color: p.ink }}>
         <div style={{ fontFamily: fam(s, "kicker"), fontWeight: 700, fontSize: 26 * (s.body ?? 1), letterSpacing: 4, color: p.accent, marginBottom: 18 * g, translate: off(s, 0) }}>{t.kicker}</div>
-        <div style={{ fontFamily: fam(s, "title"), fontWeight: 700, fontSize: 112 * (s.head ?? 1), lineHeight: 0.95, textTransform: "uppercase", translate: off(s, 1) }}>{lines(t.title)}</div>
+        <div style={{ fontFamily: fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 112 * (s.head ?? 1), lineHeight: 0.95, textTransform: "uppercase", translate: off(s, 1) }}>{lines(t.title)}</div>
         <div style={{ fontFamily: fam(s, "sub"), fontWeight: 500, fontSize: 28 * (s.body ?? 1), color: p.sub, marginTop: 24 * g, translate: off(s, 2) }}>{t.sub}</div>
         <div style={{ marginTop: 34 * g, translate: off(s, 3) }}>
           <Button s={s} p={p} size={30}>{t.button}</Button>
@@ -158,7 +169,7 @@ const Cafe: React.FC<{ s: Spec; p: Pal; t: Record<string, string> }> = ({ s, p, 
       </div>
       <div style={{ position: "absolute", left: pad, top: 64, fontFamily: fam(s, "kicker"), fontWeight: 700, fontSize: 26, letterSpacing: 6, color: p.ink, translate: off(s, 0) }}>{t.brand}</div>
       <div style={{ position: "absolute", left: pad, top: 230, width: 400, color: p.ink, textAlign: s.align ?? "left" }}>
-        <div style={{ fontFamily: s.font === "head" || !s.font ? SERIF : fam(s, "title"), fontWeight: 700, fontSize: 88 * (s.head ?? 1), lineHeight: 1.02, translate: off(s, 1) }}>{lines(t.title)}</div>
+        <div style={{ fontFamily: s.font === "head" || !s.font ? SERIF : fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 88 * (s.head ?? 1), lineHeight: 1.02, translate: off(s, 1) }}>{lines(t.title)}</div>
         <div style={{ fontFamily: fam(s, "sub"), fontWeight: 500, fontSize: 27 * (s.body ?? 1), lineHeight: 1.4, color: p.sub, marginTop: 28 * g, width: 330, translate: off(s, 2) }}>{t.sub}</div>
         <div style={{ marginTop: 40 * g, translate: off(s, 3) }}>
           <Button s={s} p={p} size={30}>{t.button}</Button>
@@ -180,7 +191,7 @@ const Sale: React.FC<{ s: Spec; p: Pal; t: Record<string, string> }> = ({ s, p, 
       </div>
       <div style={{ position: "absolute", left: pad, top: 40, background: p.accent, color: p.accentInk, fontFamily: fam(s, "kicker"), fontWeight: 700, fontSize: 26, padding: "8px 18px", borderRadius: 10, letterSpacing: 2 }}>{t.tag}</div>
       <div style={{ position: "absolute", left: pad, right: pad, top: 600 * (0.9 + 0.1 * g), color: p.ink, textAlign: s.align ?? "left" }}>
-        <div style={{ fontFamily: fam(s, "title"), fontWeight: 700, fontSize: 70 * (s.head ?? 1), lineHeight: 1.05, textTransform: s.font === "head" || !s.font ? "uppercase" : "none", translate: off(s, 0) }}>{t.title}</div>
+        <div style={{ fontFamily: fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 70 * (s.head ?? 1), lineHeight: 1.05, textTransform: s.font === "head" || !s.font ? "uppercase" : "none", translate: off(s, 0) }}>{t.title}</div>
         <div style={{ fontFamily: fam(s, "sub"), fontWeight: 500, fontSize: 28 * (s.body ?? 1), color: p.sub, marginTop: 14 * g, translate: off(s, 1) }}>{t.sub}</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: s.align === "center" ? "center" : "space-between", gap: 24, marginTop: 34 * g, translate: off(s, 2) }}>
           <div>
@@ -210,7 +221,7 @@ const App: React.FC<{ s: Spec; p: Pal; t: Record<string, string> }> = ({ s, p, t
         <div style={{ height: 260, borderRadius: 24, overflow: "hidden", marginTop: 20 * g }}>
           <Photo src={s.photo} />
         </div>
-        <div style={{ fontFamily: fam(s, "title"), fontWeight: 700, fontSize: 40 * (s.head ?? 1), lineHeight: 1.1, marginTop: 26 * g, translate: off(s, 1) }}>{t.title}</div>
+        <div style={{ fontFamily: fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 40 * (s.head ?? 1), lineHeight: 1.1, marginTop: 26 * g, translate: off(s, 1) }}>{t.title}</div>
         <div style={{ fontFamily: fam(s, "sub"), fontWeight: 500, fontSize: 20 * (s.body ?? 1), color: p.sub, marginTop: 10 * g, translate: off(s, 2) }}>{t.sub}</div>
         <div style={{ display: "flex", gap: 10, marginTop: 22 * g }}>
           {["Màu sắc", "Bố cục", "Chữ"].map((x) => (
@@ -234,14 +245,14 @@ const Landing: React.FC<{ s: Spec; p: Pal; t: Record<string, string> }> = ({ s, 
   return (
     <div style={{ width: W, height: H, position: "relative", background: p.bg, overflow: "hidden", color: p.ink }}>
       <div style={{ position: "absolute", left: pad, right: pad, top: 40, display: "flex", alignItems: "center", gap: 40, fontFamily: BODY, fontWeight: 600, fontSize: 22, color: p.sub }}>
-        <span style={{ fontFamily: fam(s, "title"), fontWeight: 700, fontSize: 36, color: p.ink }}>{t.logo}</span>
+        <span style={{ fontFamily: fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 36, color: p.ink }}>{t.logo}</span>
         <span style={{ flex: 1 }} />
         <span>Tính năng</span>
         <span>Bảng giá</span>
         <span>Blog</span>
       </div>
       <div style={{ position: "absolute", left: pad, top: 210, width: 600, textAlign: s.align ?? "left" }}>
-        <div style={{ fontFamily: fam(s, "title"), fontWeight: 700, fontSize: 74 * (s.head ?? 1), lineHeight: 1.05, translate: off(s, 0) }}>{lines(t.title)}</div>
+        <div style={{ fontFamily: fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 74 * (s.head ?? 1), lineHeight: 1.05, translate: off(s, 0) }}>{lines(t.title)}</div>
         <div style={{ fontFamily: fam(s, "sub"), fontWeight: 500, fontSize: 26 * (s.body ?? 1), lineHeight: 1.45, color: p.sub, marginTop: 28 * g, translate: off(s, 1) }}>{t.sub}</div>
         <div style={{ marginTop: 44 * g, translate: off(s, 2) }}>
           <Button s={s} p={p} size={28}>{t.button}</Button>
@@ -263,7 +274,7 @@ const Thumb: React.FC<{ s: Spec; p: Pal; t: Record<string, string> }> = ({ s, p,
         <Photo src={s.photo} />
       </div>
       <div style={{ position: "absolute", inset: 0, background: `linear-gradient(90deg, ${p.bg} 35%, rgba(0,0,0,0) 75%)`, opacity: s.overlay }} />
-      <div style={{ position: "absolute", left: 70 * (s.pad ?? 1), top: 120, fontFamily: fam(s, "title"), fontWeight: 700, fontSize: 150 * (s.head ?? 1), lineHeight: 0.95, color: p.ink, textTransform: "uppercase", translate: off(s, 0) }}>
+      <div style={{ position: "absolute", left: 70 * (s.pad ?? 1), top: 120, fontFamily: fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 150 * (s.head ?? 1), lineHeight: 0.95, color: p.ink, textTransform: "uppercase", translate: off(s, 0) }}>
         {t.title.split("\n").map((l, i) => (
           <div key={i} style={{ color: i === 0 ? p.sub : p.ink }}>{l}</div>
         ))}
@@ -273,7 +284,84 @@ const Thumb: React.FC<{ s: Spec; p: Pal; t: Record<string, string> }> = ({ s, p,
   );
 };
 
-const KINDS = { event: Event, cafe: Cafe, sale: Sale, app: App, landing: Landing, thumb: Thumb };
+const Slide: React.FC<{ s: Spec; p: Pal; t: Record<string, string> }> = ({ s, p, t }) => {
+  const [W, H] = SIZE.slide;
+  const g = s.gap ?? 1;
+  const pad = 80 * (s.pad ?? 1);
+  return (
+    <div style={{ width: W, height: H, position: "relative", background: p.bg, overflow: "hidden", color: p.ink }}>
+      <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 16, background: p.accent }} />
+      <div style={{ position: "absolute", left: pad, top: 70, width: s.photo ? 640 : 1100, textAlign: s.align ?? "left" }}>
+        <div style={{ fontFamily: fam(s, "kicker"), fontWeight: 700, fontSize: 24 * (s.body ?? 1), letterSpacing: 4, color: p.sub, translate: off(s, 0) }}>{t.kicker}</div>
+        <div style={{ fontFamily: fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 76 * (s.head ?? 1), lineHeight: 1.05, marginTop: 18 * g, translate: off(s, 1) }}>{lines(t.title)}</div>
+        <div style={{ fontFamily: fam(s, "sub"), fontWeight: 500, fontSize: 28 * (s.body ?? 1), color: p.sub, marginTop: 16 * g, translate: off(s, 2) }}>{t.sub}</div>
+        <div style={{ marginTop: 40 * g, display: "flex", flexDirection: "column", gap: 20 * g }}>
+          {t.items.split("|").map((x, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 18, fontFamily: fam(s, "sub"), fontWeight: 600, fontSize: 30 * (s.body ?? 1), translate: off(s, i + 3) }}>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: p.accent, flex: "none" }} />
+              {x}
+            </div>
+          ))}
+        </div>
+      </div>
+      {s.photo && (
+        <div style={{ position: "absolute", right: 60, top: 70, bottom: 70, width: 470, borderRadius: 24, overflow: "hidden" }}>
+          <Photo src={s.photo} />
+        </div>
+      )}
+      <div style={{ position: "absolute", right: 40, bottom: 24, fontFamily: BODY, fontSize: 20, color: p.sub }}>{t.page}</div>
+      <Noise k={s.noise ?? 0} w={W} h={H} />
+    </div>
+  );
+};
+
+const Card: React.FC<{ s: Spec; p: Pal; t: Record<string, string> }> = ({ s, p, t }) => {
+  const [W, H] = SIZE.card;
+  const g = s.gap ?? 1;
+  const pad = 70 * (s.pad ?? 1);
+  return (
+    <div style={{ width: W, height: H, position: "relative", background: p.bg, overflow: "hidden", color: p.ink }}>
+      {s.photo && <Photo src={s.photo} style={{ position: "absolute", inset: 0, opacity: 1 - (s.overlay ?? 0) * 0.9 }} />}
+      <div style={{ position: "absolute", right: pad, top: 60, width: 110, height: 110, borderRadius: 24, border: `4px solid ${p.accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 50, color: p.accent }}>{t.logo}</div>
+      <div style={{ position: "absolute", left: pad, right: pad, bottom: 70 * g, textAlign: s.align ?? "left" }}>
+        <div style={{ fontFamily: fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 64 * (s.head ?? 1), lineHeight: 1.05, translate: off(s, 0) }}>{t.name}</div>
+        <div style={{ fontFamily: fam(s, "sub"), fontWeight: 600, fontSize: 28 * (s.body ?? 1), color: p.accent, marginTop: 10 * g, translate: off(s, 1) }}>{t.role}</div>
+        <div style={{ height: 3, width: 120, background: p.sub, opacity: 0.5, margin: `${30 * g}px 0`, display: s.align === "center" ? "none" : "block" }} />
+        <div style={{ fontFamily: fam(s, "sub"), fontWeight: 500, fontSize: 26 * (s.body ?? 1), color: p.sub, lineHeight: 1.6, translate: off(s, 2) }}>
+          {t.phone}
+          <br />
+          {t.mail}
+        </div>
+      </div>
+      <Noise k={s.noise ?? 0} w={W} h={H} />
+    </div>
+  );
+};
+
+const Story: React.FC<{ s: Spec; p: Pal; t: Record<string, string> }> = ({ s, p, t }) => {
+  const [W, H] = SIZE.story;
+  const g = s.gap ?? 1;
+  const pad = 60 * (s.pad ?? 1);
+  return (
+    <div style={{ width: W, height: H, position: "relative", background: p.bg, overflow: "hidden", color: p.ink }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 700, borderRadius: "0 0 50% 50% / 0 0 12% 12%", overflow: "hidden" }}>
+        <Photo src={s.photo} />
+      </div>
+      <div style={{ position: "absolute", right: 50, top: 600, width: 170, height: 170, borderRadius: "50%", background: p.accent, color: p.accentInk, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: HEAD, fontWeight: 700, fontSize: 64 * (s.body ?? 1), rotate: "-10deg", boxShadow: "0 12px 30px rgba(0,0,0,.25)" }}>{t.price}</div>
+      <div style={{ position: "absolute", left: pad, right: pad, top: 760 + 20 * (g - 1), textAlign: s.align ?? "left" }}>
+        <div style={{ fontFamily: fam(s, "kicker"), fontWeight: 700, fontSize: 26 * (s.body ?? 1), letterSpacing: 4, color: p.accent, translate: off(s, 0) }}>{t.kicker}</div>
+        <div style={{ fontFamily: fam(s, "title"), letterSpacing: s.track ?? 0, fontWeight: 700, fontSize: 100 * (s.head ?? 1), lineHeight: 1, marginTop: 16 * g, translate: off(s, 1) }}>{lines(t.title)}</div>
+        <div style={{ fontFamily: fam(s, "sub"), fontWeight: 500, fontSize: 30 * (s.body ?? 1), color: p.sub, marginTop: 22 * g, lineHeight: 1.35, translate: off(s, 2) }}>{t.sub}</div>
+        <div style={{ marginTop: 34 * g, translate: off(s, 3) }}>
+          <Button s={s} p={p} size={32}>{t.button}</Button>
+        </div>
+      </div>
+      <Noise k={s.noise ?? 0} w={W} h={H} />
+    </div>
+  );
+};
+
+const KINDS = { event: Event, cafe: Cafe, sale: Sale, app: App, landing: Landing, thumb: Thumb, slide: Slide, card: Card, story: Story };
 
 export const Specimen: React.FC<{ s: Spec }> = ({ s }) => {
   const Cmp = KINDS[s.kind];

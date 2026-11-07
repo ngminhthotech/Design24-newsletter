@@ -12,6 +12,7 @@ Trong kịch bản, mọi chuỗi bắt đầu bằng "photo:" (ví dụ "photo:
 
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -35,17 +36,37 @@ def search(query, n=10, orientation=None):
     return res[:n]
 
 
+# Nhật ký ảnh đã dùng (PHOTO_LOG, mỗi dòng "<bài>\t<url>"): ảnh đã dùng ở bài khác thì bỏ qua, để các video không lặp ảnh.
+LOG = os.environ.get("PHOTO_LOG")
+TAG = os.environ.get("PHOTO_TAG", "")
+
+
+def _used_elsewhere():
+    if not LOG or not Path(LOG).exists():
+        return set()
+    return {ln.split("\t", 1)[1].strip() for ln in Path(LOG).read_text(encoding="utf-8").splitlines() if "\t" in ln and ln.split("\t", 1)[0] != TAG}
+
+
+def _log(url):
+    if LOG and url:
+        Path(LOG).parent.mkdir(parents=True, exist_ok=True)
+        with open(LOG, "a", encoding="utf-8") as f:
+            f.write(f"{TAG}\t{url}\n")
+
+
 def fetch(spec):
     """'latte coffee#2' -> (đường dẫn trong public, thông tin nguồn)."""
     query, _, idx = spec.partition("#")
     idx = int(idx or 0)
-    key = hashlib.md5(spec.encode()).hexdigest()[:10]
+    key = hashlib.md5((spec + "|" + TAG).encode()).hexdigest()[:10]
     OUT.mkdir(parents=True, exist_ok=True)
     meta_path = OUT / f"{key}.json"
     if meta_path.exists():
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
         return f"photos/{key}.jpg", meta
     res = search(query.strip())
+    used = _used_elsewhere()
+    res = [x for x in res if x.get("foreign_landing_url") not in used] or res
     if not res:
         raise SystemExit(f"Không tìm thấy ảnh cho '{query}'")
     pick = res[min(idx, len(res) - 1)]
@@ -60,6 +81,7 @@ def fetch(spec):
     raw.unlink()
     meta = {"query": query, "title": pick.get("title"), "creator": pick.get("creator"), "source": pick.get("source"), "license": pick.get("license"), "url": pick.get("foreign_landing_url")}
     meta_path.write_text(json.dumps(meta, ensure_ascii=False), encoding="utf-8")
+    _log(meta["url"])
     return f"photos/{key}.jpg", meta
 
 

@@ -20,6 +20,7 @@ khớp đúng tên, đúng mạng trong tài khoản Buffer (tránh đăng nhầ
 import argparse
 import datetime as dt
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -99,6 +100,9 @@ def main(argv=None):
         if "palettes" in spec and not spec.get("music"):
             spec["music"] = MUSIC
             (folder / "video.json").write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
+        # Ảnh minh họa: ghi nhật ký ảnh đã dùng cạnh thư mục bài để các video sau không lặp ảnh
+        os.environ.setdefault("PHOTO_LOG", str(folder.parent.parent / "anh-da-dung.tsv"))
+        os.environ["PHOTO_TAG"] = folder.name
         args = [ROOT / "render" / "video.sh", folder / "video.json", video] + ([] if a.no_voice else ["--voice"])
         sh(*args)
     files = {"fb": folder / "video-fb-yt.mp4", "tt": folder / "video-tiktok.mp4"}
