@@ -60,11 +60,20 @@ Chọn dạng hợp chủ đề nhất, và khác dạng của bài đăng ngay 
 - Ít nhất 3 loại mẫu thiết kế (`kind`) khác nhau trong một video. Loại mẫu chính không trùng bài đăng trước.
 - Mỗi ảnh chỉ dùng 1 lần trong video (trừ trước/sau của cùng một mẫu). Ảnh tự động không lặp giữa các bài nhờ nhật ký `anh-da-dung.tsv`. Từ khóa ảnh viết bằng tiếng Anh, cụ thể, khớp nội dung ("bubble tea shop", "wedding invitation flowers"). Sau khi dựng, xem ảnh trong `video/public/photos/`: có logo hãng, chữ, hình mờ, tranh cổ hay nội dung không phù hợp thì đổi từ khóa hoặc thêm `#1`, `#2` để lấy ảnh khác.
 - Đổi bảng màu mẫu (`pal`) theo câu chuyện của bài, không giữ màu mặc định mãi.
-- Không bắt đầu 2 bài liền nhau bằng cùng một loại cảnh.
+- Không bắt đầu 2 bài liền nhau bằng cùng một loại cảnh. Loại mẫu chính không trùng bài trước. Thứ tự cảnh không giống bài trước quá nửa.
+
+### 2.3b Phong cách hình ảnh (tự động, không cần làm tay)
+
+Người dùng đã phàn nàn video "đơn điệu, một màu". Vì vậy mỗi video có một **phong cách** riêng: bảng màu nền, màu nhấn, phông tiêu đề, họa tiết nền, hình trang trí, kiểu phụ đề, bố cục cảnh mở đầu, khung đặt mẫu và bộ chuyển cảnh. Có 10 phong cách trong `video/src/studio/looks.ts`: `dem-xanh`, `cam-dat`, `pastel-keo`, `bao-do`, `rung-reu`, `neon-dem`, `hoang-hon`, `toi-gian`, `chanh-vang`, `bien-xanh`.
+
+- `autopost.run` **tự chọn** phong cách khác 5 bài gần nhất và ghi vào trường `look` của `video.json`. Không cần đặt `look`; nếu đặt mà trùng 5 bài gần nhất thì nó tự đổi. Muốn ép một phong cách: `--look <tên>`.
+- Trường `bg` của cảnh (`dark`, `ink`, `blue`, `paper`) là **vai trò nền**, màu thật lấy theo phong cách (ví dụ `blue` ở phong cách `chanh-vang` là nền vàng chanh). 2 cảnh liền nhau trùng nền thì mẫu tự đổi nền. Vẫn nên xen kẽ nền tối và sáng.
+- `autopost.run` **kiểm tra luật đa dạng** ở mục 2.3 (số cảnh, số loại cảnh, cảnh liền nhau, loại mẫu, so với bài trước) trước khi dựng. Không đạt thì dừng và in lỗi: sửa `video.json` theo lỗi rồi chạy lại. Kiểm tra trước bằng `python3 -m autopost.dadang <thư mục bài>`.
+- Không được né kiểm tra bằng cách bỏ `"template": "studio"` hay dùng mẫu cũ.
 
 ### 2.4 Cú pháp
 
-Gốc JSON: `"template": "studio"`, `series` ("Mẹo thiết kế" hoặc "Chữ và thương hiệu"), `topic`, `date`, `sources`, `scenes`. Ảnh viết `"photo:<từ khóa tiếng Anh>"` (thêm `#n` để lấy ảnh thứ n), được tải tự động (ảnh CC0, Openverse). Trong chữ tiêu đề, `*từ khóa*` được tô nền vàng. Mọi cảnh có `say` và có thể có `bg`: `dark`, `ink`, `blue`, `paper`, `photo` (ảnh mờ, cần `photo`) hoặc mã màu.
+Gốc JSON: `"template": "studio"`, `series` ("Mẹo thiết kế" hoặc "Chữ và thương hiệu"), `topic`, `date`, `sources`, `scenes`. Ảnh viết `"photo:<từ khóa tiếng Anh>"` (thêm `#n` để lấy ảnh thứ n), được tải tự động (ảnh CC0, Openverse). Trong chữ tiêu đề, `*từ khóa*` được đánh dấu bằng màu nhấn của phong cách. Mọi cảnh có `say` và có thể có `bg`: `dark`, `ink`, `blue`, `paper` (vai trò nền theo phong cách, xem 2.3b), `photo` (ảnh mờ, cần `photo`) hoặc mã màu. Trường gốc `look` do `autopost.run` tự điền.
 
 | type | Dùng khi | Trường |
 | --- | --- | --- |
@@ -120,6 +129,6 @@ Lệnh này tự tạo giọng Vbee (giọng clone Nguyễn Hoài Anh), dựng v
 
 ## 5. Ghi lại
 
-- Thêm vào `D/da-dang.md` một dòng: ngày, giờ, chủ đề, dạng video, kiểu mở đầu, loại mẫu chính (để bài sau chọn khác).
+- Thêm vào `D/da-dang.md` một dòng: ngày, giờ, chủ đề, dạng video, kiểu mở đầu, loại mẫu chính, phong cách (`look` trong `video.json` sau khi dựng) để bài sau chọn khác.
 - Báo cáo `D/bao-cao/<ngày>.md`: 2 chủ đề, nguồn, đường dẫn video, id bài Buffer từng kênh, lỗi nếu có. Kênh lỗi thì thử lại tối đa 2 lần rồi ghi lỗi, không đăng trùng.
 - Mỗi tuần một lần (thứ Hai) chạy `python3 -m autopost.insights` nếu có, ghi lượt xem để chọn chủ đề tốt hơn.

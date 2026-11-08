@@ -15,6 +15,17 @@ const FILES: [string, string, string][] = [
   ["Be Vietnam Pro", "be-vietnam-pro", "700"],
   ["Be Vietnam Pro", "be-vietnam-pro", "800"],
   ["Playfair Display", "playfair-display", "700"],
+  // Phông tiêu đề cho các phong cách video Studio (studio/looks.ts)
+  ["Anton", "anton", "400"],
+  ["Montserrat", "montserrat", "900"],
+  ["Montserrat", "montserrat", "600"],
+  ["Fraunces", "fraunces", "800"],
+  ["Baloo 2", "baloo-2", "800"],
+  ["Bricolage Grotesque", "bricolage-grotesque", "800"],
+  ["Barlow Condensed", "barlow-condensed", "800"],
+  ["Lexend", "lexend", "800"],
+  ["Lexend", "lexend", "500"],
+  ["Nunito", "nunito", "800"],
 ];
 
 let loaded = false;

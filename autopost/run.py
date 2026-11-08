@@ -25,7 +25,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from autopost import buffer, media
+from autopost import buffer, dadang, media
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "render"))
 import tracks  # noqa: E402,F401
@@ -81,6 +81,7 @@ def main(argv=None):
     p.add_argument("--dry-run", action="store_true", help="chỉ dựng video, không tải lên, không gọi Buffer")
     p.add_argument("--no-voice", action="store_true", help="dựng không có giọng (thử nhanh)")
     p.add_argument("--rerender", action="store_true", help="dựng lại dù đã có video.mp4")
+    p.add_argument("--look", help="ép phong cách hình ảnh (xem video/src/studio/looks.ts); mặc định tự chọn khác 5 bài gần nhất")
     a = p.parse_args(argv)
     if not (a.dry_run or a.draft or a.at or a.now):
         p.error("chọn một trong --dry-run, --draft, --now hoặc --at")
@@ -100,6 +101,16 @@ def main(argv=None):
         if "palettes" in spec and not spec.get("music"):
             spec["music"] = MUSIC
             (folder / "video.json").write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
+        # Chống đơn điệu: mỗi bài một phong cách hình ảnh khác các bài gần nhất, và kịch bản phải qua luật đa dạng
+        if spec.get("template") == "studio":
+            look = dadang.chon_phong_cach(folder, spec, force=a.look)
+            if spec.get("look") != look:
+                spec["look"] = look
+                (folder / "video.json").write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"Phong cách hình ảnh: {look}", file=sys.stderr)
+            problems = dadang.kiem_tra(folder, spec)
+            if problems:
+                raise SystemExit("Kịch bản chưa đạt luật đa dạng, chưa dựng:\n- " + "\n- ".join(problems) + "\nSửa video.json rồi chạy lại.")
         # Ảnh minh họa: ghi nhật ký ảnh đã dùng cạnh thư mục bài để các video sau không lặp ảnh
         os.environ.setdefault("PHOTO_LOG", str(folder.parent.parent / "anh-da-dung.tsv"))
         os.environ["PHOTO_TAG"] = folder.name

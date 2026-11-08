@@ -15,6 +15,9 @@ Code dùng lại từ luồng Tìm Việc Số (`ngminhthotech/auto-post`): đă
 | `examples/bai-mau-kienthuc/` | Chú thích mẫu cho Facebook, TikTok, YouTube |
 | `video/src/kienthuc/` | Mẫu video Remotion "KienThuc" 1080x1920: cảnh `hook`, `ratio`, `point`, `compare`, `list`, `outro`; phụ đề, nhạc nền, chuyển cảnh |
 | `video/src/ui.tsx`, `brand.ts` | Nền, logo và màu nhận diện Design24 |
+| `video/src/studio/` | Mẫu video "Studio" (dùng cho bài mới). `looks.ts`: 10 phong cách hình ảnh (bảng màu, phông, họa tiết, phụ đề, bố cục mở đầu, chuyển cảnh), mỗi bài một phong cách |
+| `autopost/dadang.py` | Chống đơn điệu: tự chọn phong cách khác 5 bài gần nhất, kiểm tra luật đa dạng của kịch bản (`python3 -m autopost.dadang <thư mục bài>`) |
+| `video/xem-phong-cach.mjs` | Xem nhanh một kịch bản ở nhiều phong cách (ảnh lưới khung hình, không dựng video) |
 | `autopost/run.py` | Chạy trọn luồng một bài: giọng Vbee, dựng, nén, tải lên nhánh `media`, hẹn giờ Buffer 3 kênh (`--dry-run`, `--draft`, `--at`) |
 | `assets/chu-de.md` | Danh sách chủ đề cho 2 khung giờ 9:00 và 19:00 |
 | `examples/artboard-khoang-trang.json` | Kịch bản mẫu dùng cảnh chung: `fix`, `versus`, `dodont`, `point`, `list` |

@@ -4,8 +4,14 @@ import { Audio } from "@remotion/media";
 import { linearTiming, type TransitionPresentation, type TransitionPresentationComponentProps, TransitionSeries } from "@remotion/transitions";
 import { slide } from "@remotion/transitions/slide";
 import { wipe } from "@remotion/transitions/wipe";
-import { BODY, HEAD, loadFonts } from "../artboard/fonts";
-import { Big, Cta, Gallery, Hook, Quiz, type SceneProps, Show, Split, Stat, type StudioScene, Swatches, Tips, YELLOW } from "./scenes";
+import { fade } from "@remotion/transitions/fade";
+import { flip } from "@remotion/transitions/flip";
+import { iris } from "@remotion/transitions/iris";
+import { clockWipe } from "@remotion/transitions/clock-wipe";
+import { pushCut } from "@remotion/transitions/push-cut";
+import { loadFonts } from "../artboard/fonts";
+import { Big, Cta, Gallery, Hook, Quiz, type SceneProps, SeedContext, Show, Split, Stat, type StudioScene, Swatches, Tips } from "./scenes";
+import { getLook, headStyle, type Look, LookContext, type Role, type TransitionName } from "./looks";
 
 // Mẫu "Studio": mỗi cảnh một bố cục, nền và mẫu thiết kế khác nhau (poster, bài đăng, app, web...),
 // ảnh thật CC0, chuyển cảnh nhanh (đẩy, quét, zoom, chớp), phụ đề vàng, logo Design24 góc trên.
@@ -19,6 +25,7 @@ export type StudioData = {
   date: string;
   sources: string[];
   accent?: string;
+  look?: string; // phong cách (studio/looks.ts); autopost.run tự chọn, không trùng bài gần nhất
   scenes: StudioScene[];
   credits?: { title?: string; creator?: string; source?: string; url?: string }[];
   voice?: { src: string; dur: number; text: string }[];
@@ -51,14 +58,69 @@ const Punch: React.FC<TransitionPresentationComponentProps<Record<string, never>
 };
 const punch = (): TransitionPresentation<Record<string, never>> => ({ component: Punch, props: {} });
 
-const PRES = [
-  () => slide({ direction: "from-right" }),
-  () => punch(),
-  () => wipe({ direction: "from-bottom-left" }),
-  () => slide({ direction: "from-bottom" }),
-  () => punch(),
-  () => wipe({ direction: "from-right" }),
-];
+// Chuyển cảnh tự viết: các dải màu của phong cách quét ngang che điểm cắt
+const Bars: React.FC<TransitionPresentationComponentProps<{ colors: string[] }>> = ({ children, presentationDirection, presentationProgress, passedProps }) => {
+  const p = presentationProgress;
+  if (presentationDirection === "exiting") return <AbsoluteFill style={{ opacity: p < 0.5 ? 1 : 0 }}>{children}</AbsoluteFill>;
+  return (
+    <AbsoluteFill>
+      <AbsoluteFill style={{ opacity: p >= 0.5 ? 1 : 0 }}>{children}</AbsoluteFill>
+      {passedProps.colors.map((c, i) => {
+        const q = Math.min(1, Math.max(0, p * 1.4 - i * 0.12));
+        const x = interpolate(q, [0, 0.5, 1], [-1100, 0, 1100]);
+        return <div key={i} style={{ position: "absolute", left: 0, top: (i * 1920) / passedProps.colors.length, width: 1080, height: 1920 / passedProps.colors.length + 2, background: c, translate: `${i % 2 ? -x : x}px 0px` }} />;
+      })}
+    </AbsoluteFill>
+  );
+};
+const bars = (colors: string[]): TransitionPresentation<{ colors: string[] }> => ({ component: Bars, props: { colors } });
+// Chuyển cảnh tự viết: xoay và thu nhỏ cảnh cũ, cảnh mới xoay vào
+const Spin: React.FC<TransitionPresentationComponentProps<Record<string, never>>> = ({ children, presentationDirection, presentationProgress }) => {
+  const p = presentationProgress;
+  const enter = presentationDirection === "entering";
+  const style: React.CSSProperties = enter
+    ? { rotate: `${(1 - p) * 12}deg`, scale: String(interpolate(p, [0, 1], [0.6, 1])), opacity: interpolate(p, [0, 0.4], [0, 1], { extrapolateRight: "clamp" }) }
+    : { rotate: `${-p * 12}deg`, scale: String(interpolate(p, [0, 1], [1, 1.3])), opacity: 1 - p };
+  return <AbsoluteFill style={style}>{children}</AbsoluteFill>;
+};
+const spin = (): TransitionPresentation<Record<string, never>> => ({ component: Spin, props: {} });
+
+const DIRS = ["from-right", "from-left", "from-bottom", "from-top"] as const;
+const presentation = (name: TransitionName, i: number, look: Look) => {
+  switch (name) {
+    case "slide": return slide({ direction: DIRS[i % 4] });
+    case "wipe": return wipe({ direction: (["from-bottom-left", "from-right", "from-top-left", "from-bottom"] as const)[i % 4] });
+    case "fade": return fade();
+    case "flip": return flip({ direction: DIRS[i % 4] });
+    case "iris": return iris({ width: 1080, height: 1920 });
+    case "clock": return clockWipe({ width: 1080, height: 1920 });
+    case "push": return pushCut({ flashColor: look.accent, flashOpacity: 0.25 });
+    case "bars": return bars([look.accent, look.block, look.inkLight]);
+    case "spin": return spin();
+    default: return punch();
+  }
+};
+
+// Nền tự xoay: nếu cảnh liền trước cùng nền (hoặc không ghi nền) thì đổi sang nền kế tiếp của phong cách
+const DEF_BG: Partial<Record<StudioScene["type"], Role>> = { big: "blue", stat: "ink", cta: "blue" };
+const withVariedBg = (scenes: StudioScene[], look: Look): StudioScene[] => {
+  let prev = "";
+  let k = 0;
+  return scenes.map((s) => {
+    if (s.type === "hook" || (s.type === "tips" && s.photo && !s.bg) || s.bg === "photo") {
+      prev = "photo";
+      return s;
+    }
+    let bg: string = s.bg ?? DEF_BG[s.type] ?? look.cycle[k % look.cycle.length];
+    if (bg === prev) {
+      const opts = look.cycle.filter((r) => r !== prev);
+      bg = opts[k % opts.length];
+    }
+    k++;
+    prev = bg;
+    return { ...s, bg };
+  });
+};
 
 // ---------- Phụ đề ----------
 const display = (t: string) => t.replace(/(\d+) phần trăm/g, "$1%");
@@ -78,7 +140,7 @@ const chunks = (text: string) => {
   }
   return out;
 };
-const Caption: React.FC<{ text: string; dur: number }> = ({ text, dur }) => {
+const Caption: React.FC<{ text: string; dur: number; look: Look }> = ({ text, dur, look }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const cs = chunks(text);
@@ -86,8 +148,9 @@ const Caption: React.FC<{ text: string; dur: number }> = ({ text, dur }) => {
   let acc = 0;
   let idx = cs.length - 1;
   let start = 0;
+  let len = 1;
   for (let i = 0; i < cs.length; i++) {
-    const len = ((cs[i].length + 6) / total) * dur * fps;
+    len = ((cs[i].length + 6) / total) * dur * fps;
     if (frame < acc + len) {
       idx = i;
       start = acc;
@@ -97,13 +160,32 @@ const Caption: React.FC<{ text: string; dur: number }> = ({ text, dur }) => {
     start = acc - len;
   }
   const sp = spring({ frame: frame - start, fps, config: { damping: 14, stiffness: 260, mass: 0.6 } });
-  return (
-    <div style={{ position: "absolute", left: 50, right: 50, top: CAP_Y, display: "flex", justifyContent: "center" }}>
-      <div style={{ background: YELLOW, color: "#111", fontFamily: BODY, fontWeight: 800, fontSize: 44, lineHeight: 1.22, padding: "10px 24px 12px", borderRadius: 10, textAlign: "center", textTransform: "uppercase", scale: String(0.85 + 0.15 * sp), boxShadow: "0 10px 28px rgba(0,0,0,.4)", rotate: "-1deg" }}>
-        {cs[idx]}
-      </div>
-    </div>
-  );
+  const words = cs[idx].split(" ");
+  // số từ đã đọc trong đoạn (để tô màu từng từ ở kiểu "outline")
+  const said = Math.floor(interpolate(frame - start, [0, len * 0.9], [1, words.length + 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }));
+  const base: React.CSSProperties = { fontFamily: look.body, fontWeight: 800, fontSize: 44, lineHeight: 1.22, textAlign: "center" };
+  let el: React.ReactNode;
+  switch (look.caption) {
+    case "outline":
+      el = (
+        <div style={{ ...base, fontSize: 50, color: "#fff", textTransform: "uppercase", WebkitTextStroke: "8px #000", paintOrder: "stroke fill", textShadow: "0 6px 18px rgba(0,0,0,.5)", scale: String(0.9 + 0.1 * sp) }}>
+          {words.map((w, i) => <span key={i} style={{ color: i < said ? look.accent : "#fff" }}>{w}{i < words.length - 1 ? " " : ""}</span>)}
+        </div>
+      );
+      break;
+    case "pill":
+      el = <div style={{ ...base, background: "rgba(255,255,255,.96)", color: look.inkLight, padding: "14px 34px 16px", borderRadius: 999, boxShadow: "0 12px 30px rgba(0,0,0,.3)", translate: `0px ${(1 - sp) * 20}px`, opacity: Math.min(1, sp * 2), border: `4px solid ${look.accent}` }}>{cs[idx]}</div>;
+      break;
+    case "bar":
+      el = <div style={{ ...base, textAlign: "left", background: "#111", color: "#fff", padding: "12px 26px 14px 30px", borderLeft: `14px solid ${look.block}`, textTransform: "uppercase", boxShadow: "0 12px 30px rgba(0,0,0,.35)", clipPath: `inset(0 ${(1 - Math.min(1, sp)) * 100}% 0 0)` }}>{cs[idx]}</div>;
+      break;
+    case "tag":
+      el = <div style={{ ...base, background: "#fff", color: "#111", padding: "12px 26px 14px", borderRadius: look.radius ? 8 : 0, boxShadow: `8px 8px 0 ${look.block}`, scale: String(0.9 + 0.1 * sp) }}>{cs[idx]}</div>;
+      break;
+    default:
+      el = <div style={{ ...base, background: look.accent, color: look.accentInk, padding: "10px 24px 12px", borderRadius: 10, textTransform: "uppercase", scale: String(0.85 + 0.15 * sp), boxShadow: "0 10px 28px rgba(0,0,0,.4)", rotate: "-1deg" }}>{cs[idx]}</div>;
+  }
+  return <div style={{ position: "absolute", left: 50, right: 50, top: CAP_Y, display: "flex", justifyContent: "center" }}>{el}</div>;
 };
 
 const scene = (s: StudioScene, p: Omit<SceneProps<StudioScene>, "s">, topic: string) => {
@@ -121,10 +203,12 @@ const scene = (s: StudioScene, p: Omit<SceneProps<StudioScene>, "s">, topic: str
   }
 };
 
-export const Studio: React.FC<StudioData> = (data) => {
+export const Studio: React.FC<StudioData> = (raw) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  const accent = data.accent ?? YELLOW;
+  const look = getLook(raw.look);
+  const data = { ...raw, scenes: withVariedBg(raw.scenes, look) };
+  const accent = look.accent;
   const durs = durations(data);
   const ls = lines(data);
   const starts: number[] = [];
@@ -139,13 +223,14 @@ export const Studio: React.FC<StudioData> = (data) => {
   const prog = frame / durationInFrames;
   const last = data.scenes.length - 1;
   return (
+    <LookContext.Provider value={look}>
     <AbsoluteFill style={{ background: "#000" }}>
       <TransitionSeries>
         {data.scenes.map((s, i) => (
           <React.Fragment key={i}>
-            {i > 0 && <TransitionSeries.Transition presentation={PRES[(i - 1) % PRES.length]() as TransitionPresentation<Record<string, unknown>>} timing={linearTiming({ durationInFrames: T })} />}
+            {i > 0 && <TransitionSeries.Transition presentation={presentation(look.transitions[(i - 1) % look.transitions.length], i, look) as TransitionPresentation<Record<string, unknown>>} timing={linearTiming({ durationInFrames: T })} />}
             <TransitionSeries.Sequence name={`${i}-${s.type}`} durationInFrames={durs[i]}>
-              {scene(s, { vd: Math.ceil(ls[i].dur * FPS), dur: durs[i], sources: data.sources, accent }, data.topic)}
+              <SeedContext.Provider value={i}>{scene(s, { vd: Math.ceil(ls[i].dur * FPS), dur: durs[i], sources: data.sources, accent }, data.topic)}</SeedContext.Provider>
             </TransitionSeries.Sequence>
           </React.Fragment>
         ))}
@@ -154,10 +239,10 @@ export const Studio: React.FC<StudioData> = (data) => {
       <div style={{ position: "absolute", left: 0, top: 0, height: 8, width: `${prog * 100}%`, background: accent }} />
       {frame < starts[last] && (
         <div style={{ position: "absolute", left: 50, right: 50, top: 50, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "8px 14px", boxShadow: "0 8px 20px rgba(0,0,0,.3)" }}>
+          <div style={{ background: "#fff", borderRadius: Math.min(16, look.radius + 4), padding: "8px 14px", boxShadow: "0 8px 20px rgba(0,0,0,.3)" }}>
             <Img src={staticFile("logo-d24.png")} style={{ width: 100, display: "block" }} />
           </div>
-          <div style={{ fontFamily: HEAD, fontWeight: 700, fontSize: 28, letterSpacing: 2, color: "#fff", background: "rgba(0,0,0,.55)", padding: "8px 18px", borderRadius: 999, textTransform: "uppercase" }}>{data.series}</div>
+          <div style={{ ...headStyle(look), fontSize: 26, letterSpacing: 2, color: look.accentInk, background: look.accent, padding: "8px 18px", borderRadius: look.radius < 10 ? 2 : 999, textTransform: "uppercase", boxShadow: "0 0 0 3px rgba(255,255,255,.9), 0 8px 20px rgba(0,0,0,.25)" }}>{data.series}</div>
         </div>
       )}
       {/* Chớp sáng nhẹ ở mỗi lần cắt cảnh */}
@@ -179,9 +264,10 @@ export const Studio: React.FC<StudioData> = (data) => {
       {ls.map((l, i) => (
         <Sequence key={`v${i}`} from={starts[i] + DELAY} durationInFrames={Math.ceil(l.dur * FPS) + 8}>
           {l.src && <Audio src={staticFile(l.src)} volume={1} />}
-          <Caption text={l.text} dur={l.dur} />
+          <Caption text={l.text} dur={l.dur} look={look} />
         </Sequence>
       ))}
     </AbsoluteFill>
+    </LookContext.Provider>
   );
 };
