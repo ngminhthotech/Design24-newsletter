@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
 import requests
@@ -28,7 +29,17 @@ def search(query, n=10, orientation=None):
     params = {"q": query, "license": "cc0,pdm", "source": "rawpixel,wordpress", "page_size": 20, "size": "large", "mature": "false"}
     if orientation:
         params["aspect_ratio"] = orientation  # tall | wide | square
-    r = requests.get(API, params=params, headers=UA, timeout=30)
+    # Openverse hay trả 504/403 tạm thời khi bận: thử lại vài lần trước khi bỏ cuộc.
+    for attempt in range(5):
+        try:
+            r = requests.get(API, params=params, headers=UA, timeout=30)
+            if r.status_code in (403, 429) or r.status_code >= 500:
+                raise requests.HTTPError(f"{r.status_code} từ Openverse", response=r)
+            break
+        except (requests.HTTPError, requests.ConnectionError, requests.Timeout):
+            if attempt == 4:
+                raise
+            time.sleep(3 * (attempt + 1))
     r.raise_for_status()
     res = [x for x in r.json()["results"] if (x.get("width") or 0) >= 1000]
     if not res and orientation:
