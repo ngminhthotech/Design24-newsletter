@@ -125,7 +125,7 @@ python3 -m autopost.run D/bai/2026-11-05-0900 --at 2026-11-05T09:00:00+07:00
 python3 -m autopost.run D/bai/2026-11-05-1900 --at 2026-11-05T19:00:00+07:00
 ```
 
-Lệnh này tự tạo giọng Vbee (giọng clone Nguyễn Hoài Anh), dựng video, nén, đưa lên nhánh `media` để có URL công khai, rồi hẹn giờ trên cả 3 kênh. Trước khi hẹn giờ, xem vài khung hình của `video.mp4` (ffmpeg) để chắc chữ không tràn, không đè nhau. Muốn thử mà không đăng: `--dry-run` (chỉ dựng) hoặc `--draft` (lưu nháp trong Buffer).
+Lệnh này tự tạo giọng Vbee (giọng clone Hoài Anh bản quảng cáo, `s_cantho_male_nghoaianh_zero_shot_advertise_vc`), dựng video, nén, đưa lên nhánh `media` để có URL công khai, rồi hẹn giờ trên cả 3 kênh. Trước khi hẹn giờ, xem vài khung hình của `video.mp4` (ffmpeg) để chắc chữ không tràn, không đè nhau. Muốn thử mà không đăng: `--dry-run` (chỉ dựng) hoặc `--draft` (lưu nháp trong Buffer).
 
 ## 5. Ghi lại
 

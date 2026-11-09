@@ -5,7 +5,7 @@ tên tiếng Anh sang cách đọc theo assets/phat-am.json; phụ đề trên h
 
 Xác thực: Network secret của môi trường Claude cho host api.vbee.vn gắn sẵn 2 header
 Authorization: Bearer <token> và App-Id: <app id>. Chạy ở nơi khác thì đặt VBEE_TOKEN và VBEE_APP_ID.
-Giọng: --voice hoặc biến môi trường VBEE_VOICE (mặc định giọng clone Nguyễn Hoài Anh, như luồng Tìm Việc Số).
+Giọng: --voice hoặc biến môi trường VBEE_VOICE (mặc định giọng clone Hoài Anh bản quảng cáo).
 
 Ví dụ:
   python3 render/voice.py examples/kienthuc-mau.json --dry-run          # chỉ in lời đọc
@@ -28,7 +28,7 @@ import requests
 API = "https://api.vbee.vn/v1/tts"
 VOICES_API = "https://vbee.vn/api/public/v1/voices"
 LEGACY_API = "https://vbee.vn/api/v1/tts"
-DEFAULT_VOICE = "s_cantho_male_nguyenhoaianhdemo_zero_shot_story_vc"  # giọng clone Nguyễn Hoài Anh
+DEFAULT_VOICE = "s_cantho_male_nghoaianh_zero_shot_advertise_vc"  # giọng clone Hoài Anh (quảng cáo)
 DEFAULT_SPEED = "1.0"
 MAX_CHARS = 300
 ROOT = Path(__file__).resolve().parent.parent
@@ -71,16 +71,13 @@ def _sub_words(text, table):
 
 
 def script(d):
-    """Lời đọc từng cảnh, đúng thứ tự cảnh trong video/src/kienthuc/KienThuc.tsx."""
-    return [spoken(_sub_words(_sub_words(s["say"], PRON["dich"]), PRON["doc"])) for s in d["scenes"]]
-
-
-def caption(line):
-    """Chữ hiện trên phụ đề: đổi cách đọc phiên âm về chữ viết gốc (Đì sai hai bốn -> Design24...)."""
-    for word, spoken_form in sorted(PRON["doc"].items(), key=lambda x: -len(x[1])):
-        if word[:1].isupper() or "." in word:
-            line = re.sub(re.escape(spoken_form), word, line, flags=re.I)
-    return line
+    """Lời đọc từng cảnh, đúng thứ tự cảnh trong video/src/kienthuc/KienThuc.tsx: danh sách (lời đọc, phụ đề).
+    Lời đọc thay từ tiếng Anh bằng cách đọc trong assets/phat-am.json; phụ đề giữ chữ viết gốc (Design24, video...)."""
+    out = []
+    for s in d["scenes"]:
+        translated = _sub_words(s["say"], PRON["dich"])
+        out.append((spoken(_sub_words(translated, PRON["doc"])), spoken(translated)))
+    return out
 
 
 def _headers():
@@ -228,19 +225,19 @@ def main(argv=None):
     data = json.loads(Path(a.json).read_text(encoding="utf-8"))
     lines = script(data)
     if a.dry_run:
-        for i, line in enumerate(lines):
+        for i, (line, sub) in enumerate(lines):
             print(f"[{i}] ({len(line)} ký tự) {line}")
-            print(f"     phụ đề: {caption(line)}")
+            print(f"     phụ đề: {sub}")
         return 0
     voice = resolve_voice(a.voice)
     slug = time.strftime("%Y%m%d-%H%M%S")
     folder = PUBLIC / "voice" / slug
     folder.mkdir(parents=True, exist_ok=True)
     data["voice"] = []
-    for i, line in enumerate(lines):
+    for i, (line, sub) in enumerate(lines):
         f = folder / f"{i}.mp3"
         tts(line, voice, f, a.speed)
-        data["voice"].append({"src": f"voice/{slug}/{i}.mp3", "dur": round(duration(f), 2), "text": caption(line)})
+        data["voice"].append({"src": f"voice/{slug}/{i}.mp3", "dur": round(duration(f), 2), "text": sub})
     Path(a.out).write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(a.out)
     return 0
