@@ -40,6 +40,8 @@ render/video.sh examples/kienthuc-mau.json out/video.mp4 --voice    # có giọn
 render/video.sh examples/artboard-60-30-10.json out/video.mp4 --voice  # mẫu bảng vẽ (tự chọn khi JSON có "palettes")
 ```
 
+Mọi video tự nối thêm outro "Bản tin Design24" (`assets/outro-d24.mp4`, 4,4 giây) ở cuối, nên cả `video.mp4`, `video-fb-yt.mp4` và `video-tiktok.mp4` đều có. Muốn đổi outro thì thay file đó; muốn dựng không có outro thì chạy `NO_OUTRO=1 render/video.sh ...`.
+
 Xem trước và chỉnh mẫu: `cd video && npx remotion studio`.
 
 ## Viết kịch bản mới
