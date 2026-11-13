@@ -28,8 +28,16 @@ def search(query, n=10, orientation=None):
     params = {"q": query, "license": "cc0,pdm", "source": "rawpixel,wordpress", "page_size": 20, "size": "large", "mature": "false"}
     if orientation:
         params["aspect_ratio"] = orientation  # tall | wide | square
-    r = requests.get(API, params=params, headers=UA, timeout=30)
-    r.raise_for_status()
+    import time
+    for i in range(5):
+        try:
+            r = requests.get(API, params=params, headers=UA, timeout=60)
+            r.raise_for_status()
+            break
+        except requests.RequestException:
+            if i == 4:
+                raise
+            time.sleep(10 * (i + 1))
     res = [x for x in r.json()["results"] if (x.get("width") or 0) >= 1000]
     if not res and orientation:
         return search(query, n)
