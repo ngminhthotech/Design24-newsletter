@@ -61,7 +61,12 @@ const DEF_TEXT: Record<Kind, Record<string, string>> = {
 };
 
 const lerp = (a: number | undefined, b: number | undefined, d: number, t: number) => interpolate(t, [0, 1], [a ?? d, b ?? d]);
-const lerpColor = (a: string | undefined, b: string | undefined, d: string, t: number) => interpolateColors(t, [0, 1], [a ?? d, b ?? d]);
+// Màu thường thì trộn mượt; nếu là chuỗi gradient (linear-gradient...) thì đổi hẳn ở giữa.
+const lerpColor = (a: string | undefined, b: string | undefined, d: string, t: number) => {
+  const x = a ?? d, y = b ?? d;
+  if (x.includes("gradient") || y.includes("gradient")) return t < 0.5 ? x : y;
+  return interpolateColors(t, [0, 1], [x, y]);
+};
 
 // Trộn hai bộ núm theo t (0 = from, 1 = to). Phông và căn lề đổi ở giữa.
 export const blend = (base: Spec, from: Knobs = {}, to: Knobs = {}, t: number): Spec => {
