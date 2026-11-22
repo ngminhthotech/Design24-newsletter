@@ -28,8 +28,18 @@ def search(query, n=10, orientation=None):
     params = {"q": query, "license": "cc0,pdm", "source": "rawpixel,wordpress", "page_size": 20, "size": "large", "mature": "false"}
     if orientation:
         params["aspect_ratio"] = orientation  # tall | wide | square
-    r = requests.get(API, params=params, headers=UA, timeout=30)
-    r.raise_for_status()
+    # Openverse hay trả 504 hoặc chậm: thử lại vài lần trước khi bỏ cuộc
+    for attempt in range(5):
+        try:
+            r = requests.get(API, params=params, headers=UA, timeout=45)
+            r.raise_for_status()
+            break
+        except requests.RequestException:
+            if attempt == 4:
+                raise
+            import time
+
+            time.sleep(5 * (attempt + 1))
     res = [x for x in r.json()["results"] if (x.get("width") or 0) >= 1000]
     if not res and orientation:
         return search(query, n)
