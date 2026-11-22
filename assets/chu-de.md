@@ -24,6 +24,14 @@ Routine chọn theo thứ tự từ trên xuống, bỏ qua chủ đề đã đ�
 18. Gradient đẹp: chọn 2 màu gần nhau
 19. Nền tối hay nền sáng: khi nào dùng
 20. Ít chi tiết hơn: bỏ bớt để nổi bật hơn
+21. Màu tương đồng (analogous): phối màu hài hòa dễ nhất
+22. Kích thước ảnh chuẩn cho Facebook, TikTok, YouTube
+23. Cắt ảnh (crop) cho đúng trọng tâm
+24. Bố cục chữ trên ảnh sản phẩm
+25. Dùng khung và đường viền đúng lúc
+26. Màu theo cảm xúc: chọn màu hợp ngành hàng
+27. Bóng đổ (shadow) nhẹ cho thiết kế có chiều sâu
+28. Thiết kế carousel nhiều ảnh trên Facebook, Instagram
 
 ## 19:00 Chữ và thương hiệu
 
@@ -47,3 +55,8 @@ Routine chọn theo thứ tự từ trên xuống, bỏ qua chủ đề đã đ�
 18. Lỗi phông chữ hay gặp của người mới
 19. Chữ đậm, nhạt: tạo nhấn mạnh đúng cách
 20. Viết tiêu đề ngắn cho thiết kế quảng cáo
+21. Chữ viết tay và chữ trang trí: dùng ít thôi
+22. Viết hoa toàn bộ: khi nào nên, khi nào không
+23. Chữ tiếng Việt có dấu: chọn phông không lỗi dấu
+24. Đặt slogan cạnh logo
+25. Danh thiếp: thông tin nào cần có
